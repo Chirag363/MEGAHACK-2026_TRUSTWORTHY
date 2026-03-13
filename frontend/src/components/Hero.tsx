@@ -108,7 +108,7 @@ export default function Hero() {
           </motion.p>
 
           <motion.div variants={item} style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }} className="hero-btns">
-            <a href="#contact" className="btn-primary">Get Started <ArrowRight size={16} /></a>
+            <a href="/dashboard" className="btn-primary">Get Started <ArrowRight size={16} /></a>
             <a href="#about"   className="btn-outline">Learn More</a>
           </motion.div>
 
