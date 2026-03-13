@@ -1,7 +1,7 @@
 runtime:
   model_provider: gradient
   model_name: openai-gpt-oss-120b
-  temperature: 0.6
+  temperature: 0.3
 
 workflow:
   start: supervisor_agent

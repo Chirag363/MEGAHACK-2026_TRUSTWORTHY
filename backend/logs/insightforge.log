@@ -662,3 +662,80 @@ Instruction: Generate a concise visualization plan for the Superstore Sales data
 2026-03-14 01:54:19 | INFO | app.api | [request:de1ac1ee] completed GET /api/v1/chat/sessions status=200 duration_ms=126.66
 2026-03-14 01:54:20 | INFO | app.api | [request:682c5220] started GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158
 2026-03-14 01:54:20 | INFO | app.api | [request:682c5220] completed GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158 status=200 duration_ms=13.20
+2026-03-14 04:30:51 | INFO | app.services.chat_session_service | ChatSessionService connected to MongoDB db=agent-orc collection=chat_sessions
+2026-03-14 04:31:22 | INFO | app.api | [request:89233df2] started GET /api/v1/chat/sessions
+2026-03-14 04:31:22 | INFO | app.api | [request:89233df2] completed GET /api/v1/chat/sessions status=200 duration_ms=42.64
+2026-03-14 04:31:23 | INFO | app.api | [request:fd86713c] started GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 04:31:23 | INFO | app.api | [request:fd86713c] completed GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e status=200 duration_ms=243.89
+2026-03-14 04:32:53 | INFO | app.api | [request:c60e2433] started GET /api/v1/chat/sessions
+2026-03-14 04:32:53 | INFO | app.api | [request:c60e2433] completed GET /api/v1/chat/sessions status=200 duration_ms=49.82
+2026-03-14 04:32:53 | INFO | app.api | [request:1203d6f1] started GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 04:32:53 | INFO | app.api | [request:1203d6f1] completed GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e status=200 duration_ms=13.53
+2026-03-14 04:34:01 | INFO | app.api | [request:e13c2041] started POST /api/v1/chat/message/stream
+2026-03-14 04:34:01 | INFO | app.api | [run:2dd2c53b04] stream request received session_id=e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 04:34:01 | INFO | app.services.analysis_service | [run:2dd2c53b04] streaming analysis started
+2026-03-14 04:34:01 | INFO | app.api | [request:e13c2041] completed POST /api/v1/chat/message/stream status=200 duration_ms=66.56
+2026-03-14 04:34:01 | INFO | app.services.analysis_service | [run:2dd2c53b04] building LLM client provider=gradient model=openai-gpt-oss-120b
+2026-03-14 04:34:01 | INFO | app.services.llm_service | LLMService using DigitalOcean Gradient base=https://inference.do-ai.run/v1/ model=openai-gpt-oss-120b
+2026-03-14 04:34:04 | INFO | app.services.analysis_service | [run:2dd2c53b04] dataset tools initialized count=11
+2026-03-14 04:34:04 | INFO | app.services.workflow_service | workflow mode=supervisor workers=['casual_convo_agent', 'data_cleaning_agent', 'feature_analysis_agent', 'insight_generation_agent', 'recommendation_agent', 'visualization_agent']
+2026-03-14 04:34:06 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 04:34:06 | INFO | app.services.workflow_service | [run:2dd2c53b04] supervisor dispatch: Supervisor decision: route to visualization_agent
+Reason: The user explicitly requests a visualization diagram. Only the visualization_agent is needed to generate the chart; no data cleaning or feature analysis is required at this point.
+Instruction: Create a visualization diagram for the Superstore dataset. Provide a mermaid or viz-3d block that shows a 3D scatter plot (or another suitable visual) illustrating the relationship among Sales, Profit, and Quantity, colored by Category or Region. Include axis labels and a brief caption.
+2026-03-14 04:34:06 | INFO | app.services.workflow_service | [run:2dd2c53b04] agent start: visualization_agent
+2026-03-14 04:34:10 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 04:34:10 | INFO | app.services.workflow_service | [run:2dd2c53b04] agent complete: visualization_agent output_chars=1566
+2026-03-14 04:34:10 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 04:34:14 | INFO | app.services.workflow_service | [run:2dd2c53b04] supervisor finalized report
+2026-03-14 04:34:14 | INFO | app.services.analysis_service | [run:2dd2c53b04] streaming analysis finished in 13115.32 ms
+2026-03-14 04:34:14 | INFO | app.api | [run:2dd2c53b04] stream workflow completed reply_chars=3950
+2026-03-14 04:34:14 | INFO | app.api | [request:1fb50d9e] started GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 04:34:14 | INFO | app.api | [request:1fb50d9e] completed GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e status=200 duration_ms=15.48
+2026-03-14 04:34:14 | INFO | app.api | [request:8c3cf03b] started GET /api/v1/chat/sessions
+2026-03-14 04:34:15 | INFO | app.api | [request:8c3cf03b] completed GET /api/v1/chat/sessions status=200 duration_ms=35.99
+2026-03-14 04:36:46 | INFO | app.api | [request:8bdce202] started POST /api/v1/chat/message/stream
+2026-03-14 04:36:46 | INFO | app.api | [run:764ed13a28] stream request received session_id=e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 04:36:46 | INFO | app.services.analysis_service | [run:764ed13a28] streaming analysis started
+2026-03-14 04:36:46 | INFO | app.api | [request:8bdce202] completed POST /api/v1/chat/message/stream status=200 duration_ms=48.38
+2026-03-14 04:36:46 | INFO | app.services.analysis_service | [run:764ed13a28] building LLM client provider=gradient model=openai-gpt-oss-120b
+2026-03-14 04:36:46 | INFO | app.services.llm_service | LLMService using DigitalOcean Gradient base=https://inference.do-ai.run/v1/ model=openai-gpt-oss-120b
+2026-03-14 04:36:46 | INFO | app.services.analysis_service | [run:764ed13a28] dataset tools initialized count=11
+2026-03-14 04:36:46 | INFO | app.services.workflow_service | workflow mode=supervisor workers=['casual_convo_agent', 'data_cleaning_agent', 'feature_analysis_agent', 'insight_generation_agent', 'recommendation_agent', 'visualization_agent']
+2026-03-14 04:36:49 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 04:36:49 | INFO | app.services.workflow_service | [run:764ed13a28] supervisor dispatch: Supervisor decision: route to visualization_agent
+Reason: The user explicitly asked for bar chart, donut chart, and a flow diagram, which are visualization tasks. Therefore only the visualization_agent is needed; no casual conversation or other analysis agents are required.
+Instruction: Using the 'Sample - Superstore.csv' dataset, create three visualizations as requested:
+1. A bar chart (viz-chart block) showing total Sales by Category.
+2. A donut chart (viz-chart block) displaying total Profit share by Region.
+3. A flow diagram (mermaid block) illustrating the order lifecycle: Order Date → Ship Date → Ship Mode → Profit outcome (positive/negative).
+Provide each visualization in its appropriate fenced block and include a brief caption for each.
+2026-03-14 04:36:49 | INFO | app.services.workflow_service | [run:764ed13a28] agent start: visualization_agent
+2026-03-14 04:36:50 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 04:36:50 | INFO | app.services.workflow_service | [run:764ed13a28] agent tool call: visualization_agent -> aggregate_data
+2026-03-14 04:36:50 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 04:36:50 | INFO | app.services.workflow_service | [run:764ed13a28] agent tool call: visualization_agent -> aggregate_data
+2026-03-14 04:36:53 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 04:36:53 | INFO | app.services.workflow_service | [run:764ed13a28] agent complete: visualization_agent output_chars=1701
+2026-03-14 04:36:54 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 04:36:58 | INFO | app.services.workflow_service | [run:764ed13a28] supervisor finalized report
+2026-03-14 04:36:58 | INFO | app.services.analysis_service | [run:764ed13a28] streaming analysis finished in 11770.41 ms
+2026-03-14 04:36:58 | INFO | app.api | [run:764ed13a28] stream workflow completed reply_chars=4046
+2026-03-14 04:36:58 | INFO | app.api | [request:4f68af29] started GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 04:36:58 | INFO | app.api | [request:4f68af29] completed GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e status=200 duration_ms=15.71
+2026-03-14 04:36:58 | INFO | app.api | [request:a9479152] started GET /api/v1/chat/sessions
+2026-03-14 04:36:58 | INFO | app.api | [request:a9479152] completed GET /api/v1/chat/sessions status=200 duration_ms=35.83
+2026-03-14 04:39:16 | INFO | app.api | [request:37e23546] started GET /api/v1/chat/sessions
+2026-03-14 04:39:16 | INFO | app.api | [request:d4404a45] started GET /api/v1/chat/sessions
+2026-03-14 04:39:16 | INFO | app.api | [request:37e23546] completed GET /api/v1/chat/sessions status=200 duration_ms=36.30
+2026-03-14 04:39:16 | INFO | app.api | [request:d4404a45] completed GET /api/v1/chat/sessions status=200 duration_ms=166.67
+2026-03-14 04:39:16 | INFO | app.api | [request:b42c5f45] started GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 04:39:16 | INFO | app.api | [request:b42c5f45] completed GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e status=200 duration_ms=16.08
+2026-03-14 04:39:32 | INFO | app.api | [request:45b9c035] started GET /api/v1/chat/sessions
+2026-03-14 04:39:32 | INFO | app.api | [request:45b9c035] completed GET /api/v1/chat/sessions status=200 duration_ms=36.54
+2026-03-14 04:39:32 | INFO | app.api | [request:02a87be9] started GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 04:39:32 | INFO | app.api | [request:02a87be9] completed GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e status=200 duration_ms=16.07
+2026-03-14 04:40:39 | INFO | app.api | [request:505d0efc] started DELETE /api/v1/chat/session/5592edcb-dbf0-4135-84b5-3f4a60dcc20d
+2026-03-14 04:40:41 | INFO | app.api | [request:505d0efc] completed DELETE /api/v1/chat/session/5592edcb-dbf0-4135-84b5-3f4a60dcc20d status=200 duration_ms=1826.76
+2026-03-14 04:40:41 | INFO | app.api | [request:d804448b] started GET /api/v1/chat/sessions
+2026-03-14 04:40:41 | INFO | app.api | [request:d804448b] completed GET /api/v1/chat/sessions status=200 duration_ms=63.28

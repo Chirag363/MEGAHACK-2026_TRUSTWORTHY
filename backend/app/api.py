@@ -311,6 +311,14 @@ def get_session(session_id: str, user_id: str | None = Query(default=None)):
     )
 
 
+@app.delete("/api/v1/chat/session/{session_id}")
+def delete_session(session_id: str, user_id: str | None = Query(default=None)):
+    deleted = session_service.delete_session(session_id=session_id, user_id=user_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Session not found.")
+    return {"ok": True, "session_id": session_id}
+
+
 @app.get("/api/v1/chat/sessions", response_model=list[SessionListItem])
 def list_sessions(
     user_id: str | None = Query(default=None),
@@ -360,20 +368,24 @@ def create_session(payload: CreateSessionRequest):
 
 
 @app.get("/api/v1/chat/session/{session_id}/artifacts")
-def get_session_artifacts(session_id: str):
-    session = session_service.get_session(session_id)
+def get_session_artifacts(session_id: str, user_id: str | None = Query(default=None)):
+    session = session_service.get_session(session_id, user_id=user_id)
     if not session:
         raise HTTPException(status_code=404, detail="Session not found.")
     return {"session_id": session_id, "artifacts": session.artifacts}
 
 
 @app.get("/api/v1/chat/session/{session_id}/artifacts/{artifact_id}/download")
-def download_artifact(session_id: str, artifact_id: str):
-    session = session_service.get_session(session_id)
+def download_artifact(
+    session_id: str,
+    artifact_id: str,
+    user_id: str | None = Query(default=None),
+):
+    session = session_service.get_session(session_id, user_id=user_id)
     if not session:
         raise HTTPException(status_code=404, detail="Session not found.")
 
-    artifact = session_service.get_artifact(session_id, artifact_id)
+    artifact = session_service.get_artifact(session_id, artifact_id, user_id=user_id)
     if not artifact:
         raise HTTPException(status_code=404, detail="Artifact not found.")
 
