@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+@import "tw-animate-css";
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -7,6 +9,26 @@
 }
 
 :root {
+  --background: #0a0a0a;
+  --foreground: #f5f5f5;
+  --card: rgba(255,255,255,0.04);
+  --card-foreground: #f5f5f5;
+  --popover: #121212;
+  --popover-foreground: #f5f5f5;
+  --primary: #ffffff;
+  --primary-foreground: #0a0a0a;
+  --secondary: #1b1b1b;
+  --secondary-foreground: #f1f1f1;
+  --muted: rgba(255,255,255,0.08);
+  --muted-foreground: #b0b0b0;
+  --accent: rgba(255,255,255,0.14);
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --input: rgba(255,255,255,0.14);
+  --ring: rgba(56,189,248,0.5);
+  --radius: 0.75rem;
+
   --bg-primary: #0a0a0a;
   --bg-secondary: #111;
   --bg-card: rgba(255,255,255,0.04);
@@ -26,6 +48,33 @@
   --gradient-hero: linear-gradient(135deg, #fff 0%, #aaa 100%);
   --gradient-card: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
   --gradient-cta: linear-gradient(135deg, #fff, #ccc);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
 html { scroll-behavior: smooth; }
