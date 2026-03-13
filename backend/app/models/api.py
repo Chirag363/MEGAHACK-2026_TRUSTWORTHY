@@ -22,6 +22,13 @@ class DatasetUploadResponse(BaseModel):
 class ChatRequest(BaseModel):
     session_id: str
     message: str = Field(min_length=1, max_length=4000)
+    user_id: str | None = None
+
+
+class CreateSessionRequest(BaseModel):
+    session_id: str | None = None
+    title: str | None = None
+    user_id: str | None = None
 
 
 class AgentTraceItem(BaseModel):
@@ -50,7 +57,22 @@ class ChatResponse(BaseModel):
 
 class SessionResponse(BaseModel):
     session_id: str
+    user_id: str | None = None
+    title: str = "New chat"
     dataset_name: str
     dataset_summary: str
     artifacts: List[ArtifactItem] = Field(default_factory=list)
     messages: List[ChatMessage]
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class SessionListItem(BaseModel):
+    session_id: str
+    user_id: str | None = None
+    title: str = "New chat"
+    dataset_name: str
+    message_count: int = 0
+    preview: str = ""
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

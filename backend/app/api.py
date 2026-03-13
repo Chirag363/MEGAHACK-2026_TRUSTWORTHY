@@ -6,12 +6,19 @@ import time
 from pathlib import Path
 from uuid import uuid4
 
-from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
 from app.core.logging_config import setup_logging
-from app.models.api import ChatRequest, ChatResponse, DatasetUploadResponse, SessionResponse
+from app.models.api import (
+    ChatRequest,
+    ChatResponse,
+    CreateSessionRequest,
+    DatasetUploadResponse,
+    SessionListItem,
+    SessionResponse,
+)
 from app.services.analysis_service import AnalysisService
 from app.services.chat_session_service import ChatSessionService
 from app.services.dataset_service import save_uploaded_dataset, summarize_dataset_upload
@@ -76,6 +83,7 @@ def health():
 async def upload_dataset(
     file: UploadFile = File(...),
     session_id: str | None = Form(default=None),
+    user_id: str | None = Form(default=None),
 ):
     resolved_session_id = session_id or str(uuid4())
     logger.info("upload received: filename=%s session_id=%s", file.filename, resolved_session_id)
@@ -98,6 +106,7 @@ async def upload_dataset(
         dataset_path=str(dataset_path),
         dataset_summary=dataset_summary,
         dataset_context=dataset_context,
+        user_id=user_id,
     )
 
     logger.info(
@@ -119,17 +128,23 @@ def chat_message(payload: ChatRequest):
     run_id = uuid4().hex[:10]
     logger.info("[run:%s] chat message received session_id=%s", run_id, payload.session_id)
 
-    session = session_service.get_session(payload.session_id)
+    session = session_service.get_session(payload.session_id, user_id=payload.user_id)
     if not session:
         logger.warning("[run:%s] unknown session_id=%s", run_id, payload.session_id)
-        raise HTTPException(status_code=404, detail="Session not found. Upload a dataset first.")
+        raise HTTPException(status_code=404, detail="Session not found. Start a new chat or upload a dataset first.")
 
-    session_service.append_message(payload.session_id, "user", payload.message)
+    session_service.append_message(
+        payload.session_id,
+        "user",
+        payload.message,
+        user_id=payload.user_id,
+    )
 
     recent_user_requests = [msg.content for msg in session.messages if msg.role == "user"][-3:]
     recent_context = "\n".join(f"- {item}" for item in recent_user_requests)
+    base_dataset_context = session.dataset_context or "No dataset uploaded yet."
     full_dataset_context = (
-        f"{session.dataset_context}\n\n"
+        f"{base_dataset_context}\n\n"
         f"Recent user analysis requests:\n{recent_context or '- None'}"
     )
 
@@ -146,10 +161,19 @@ def chat_message(payload: ChatRequest):
         raise HTTPException(status_code=500, detail=f"Agent workflow failed: {exc}") from exc
 
     reply = result["final_report"]
-    session = session_service.append_message(payload.session_id, "assistant", reply)
+    session = session_service.append_message(
+        payload.session_id,
+        "assistant",
+        reply,
+        user_id=payload.user_id,
+    )
     artifacts = result.get("artifacts", [])
     if artifacts:
-        session = session_service.add_artifacts(payload.session_id, artifacts)
+        session = session_service.add_artifacts(
+            payload.session_id,
+            artifacts,
+            user_id=payload.user_id,
+        )
 
     agent_trace = [
         {"agent": item.get("agent", "unknown"), "content": item.get("content", "")}
@@ -175,17 +199,62 @@ def chat_message(payload: ChatRequest):
 
 
 @app.get("/api/v1/chat/session/{session_id}", response_model=SessionResponse)
-def get_session(session_id: str):
-    session = session_service.get_session(session_id)
+def get_session(session_id: str, user_id: str | None = Query(default=None)):
+    session = session_service.get_session(session_id, user_id=user_id)
     if not session:
         raise HTTPException(status_code=404, detail="Session not found.")
 
     return SessionResponse(
         session_id=session.session_id,
+        user_id=session.user_id,
+        title=session.title,
         dataset_name=session.dataset_name,
         dataset_summary=session.dataset_summary,
         artifacts=session.artifacts,
         messages=session.messages,
+        created_at=session.created_at,
+        updated_at=session.updated_at,
+    )
+
+
+@app.get("/api/v1/chat/sessions", response_model=list[SessionListItem])
+def list_sessions(
+    user_id: str | None = Query(default=None),
+    limit: int = Query(default=50, ge=1, le=200),
+):
+    sessions = session_service.list_sessions(user_id=user_id, limit=limit)
+    return [
+        SessionListItem(
+            session_id=item.session_id,
+            user_id=item.user_id,
+            title=item.title,
+            dataset_name=item.dataset_name,
+            message_count=item.message_count,
+            preview=item.preview,
+            created_at=item.created_at,
+            updated_at=item.updated_at,
+        )
+        for item in sessions
+    ]
+
+
+@app.post("/api/v1/chat/session", response_model=SessionResponse)
+def create_session(payload: CreateSessionRequest):
+    session = session_service.create_session(
+        session_id=payload.session_id,
+        title=payload.title,
+        user_id=payload.user_id,
+    )
+    return SessionResponse(
+        session_id=session.session_id,
+        user_id=session.user_id,
+        title=session.title,
+        dataset_name=session.dataset_name,
+        dataset_summary=session.dataset_summary,
+        artifacts=session.artifacts,
+        messages=session.messages,
+        created_at=session.created_at,
+        updated_at=session.updated_at,
     )
 
 
