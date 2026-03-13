@@ -95,7 +95,6 @@ export default function ChatWorkspace() {
   const [isSwitching, setIsSwitching] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [isClearing, setIsClearing] = useState(false);
   const [datasetSummary, setDatasetSummary] = useState("");
   const [datasetFileAvailable, setDatasetFileAvailable] = useState(true);
   const [artifacts, setArtifacts] = useState<DashboardArtifact[]>([]);
@@ -500,10 +499,6 @@ export default function ChatWorkspace() {
     };
   }, [createSession, fetchSessionById, fetchSessions]);
 
-  function clearChatHistory() {
-    throw new Error("Function not implemented.");
-  }
-
   function saveReport(message: DashboardChatMessage): void {
     throw new Error("Function not implemented.");
   }
@@ -512,34 +507,61 @@ export default function ChatWorkspace() {
     throw new Error("Function not implemented.");
   }
 
+  const downloadArtifact = useCallback(
+    async (artifact: DashboardArtifact) => {
+      if (!activeSessionId) {
+        toast.error("No active chat session.");
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `/api/chat/sessions/${encodeURIComponent(activeSessionId)}/artifacts/${encodeURIComponent(artifact.artifact_id)}/download`,
+          {
+            method: "GET",
+            cache: "no-store",
+          }
+        );
+
+        if (!response.ok) {
+          const payload = (await response.json().catch(() => ({}))) as { error?: string };
+          throw new Error(payload.error || "Failed to download artifact.");
+        }
+
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = artifact.name || "artifact.bin";
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Failed to download artifact.";
+        setError(message);
+        toast.error(message);
+      }
+    },
+    [activeSessionId]
+  );
+
   return (
     <div className="grid h-full min-h-0 flex-1 gap-4 px-4 lg:grid-cols-[300px_minmax(0,1fr)] lg:px-6">
       {/* ── Chat History Sidebar ── */}
       <aside className="flex h-full min-h-0 flex-col rounded-2xl border border-[var(--chat-border)] bg-[var(--chat-surface)] p-3 shadow-[inset_0_1px_0_var(--chat-border-soft)]">
         <div className="mb-3 flex items-center justify-between px-1">
           <h2 className="text-sm font-semibold tracking-tight text-[var(--chat-text)]">Chat History</h2>
-          <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-8 gap-1.5 border-[var(--chat-border)] bg-[var(--chat-surface-elev)] text-[var(--chat-text-soft)] hover:bg-[var(--chat-surface-elev)] hover:text-[var(--chat-text)]"
-              onClick={() => void clearChatHistory()}
-              disabled={isBooting || isClearing || sessions.length === 0}
-            >
-              <Trash2Icon className="size-3.5" />
-              {isClearing ? "Clearing..." : "Clear"}
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-8 gap-1.5 border-[var(--chat-border)] bg-[var(--chat-surface-elev)] text-[var(--chat-text-soft)] hover:bg-[var(--chat-surface-elev)] hover:text-[var(--chat-text)]"
-              onClick={() => void handleNewChat()}
-              disabled={isBooting || isClearing}
-            >
-              <PlusIcon className="size-3.5" />
-              New
-            </Button>
-          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-8 gap-1.5 border-[var(--chat-border)] bg-[var(--chat-surface-elev)] text-[var(--chat-text-soft)] hover:bg-[var(--chat-surface-elev)] hover:text-[var(--chat-text)]"
+            onClick={() => void handleNewChat()}
+            disabled={isBooting || isSwitching}
+          >
+            <PlusIcon className="size-3.5" />
+            New
+          </Button>
         </div>
 
         <div className="flex-1 space-y-1 overflow-y-auto pr-0.5">
@@ -554,18 +576,32 @@ export default function ChatWorkspace() {
               )}
             >
               <MessageSquareMoreIcon className="mt-0.5 size-4 shrink-0 text-[var(--chat-text-muted)]" />
-              <span className="min-w-0 flex-1">
+              <button
+                type="button"
+                onClick={() => void openSession(chat.session_id)}
+                disabled={isBooting || isSwitching}
+                className="min-w-0 flex-1 text-left"
+              >
                 <span className="block truncate text-sm font-medium text-[var(--chat-text)]">
                   {chat.title || "New chat"}
                 </span>
                 <span className="block truncate text-xs text-[var(--chat-text-muted)]">
                   {chat.dataset_name ? `📊 ${chat.dataset_name}` : chat.preview || "No messages yet"}
                 </span>
-              </span>
+              </button>
               <span className="shrink-0 text-[10px] text-[var(--chat-text-muted)]">
                 {formatRelativeTime(chat.updated_at)}
               </span>
-            </button>
+              <button
+                type="button"
+                onClick={() => void handleDeleteChat(chat.session_id)}
+                disabled={isBooting || isSwitching}
+                aria-label={`Delete ${chat.title || "chat"}`}
+                className="rounded-md p-1 text-[var(--chat-text-muted)] transition-colors hover:bg-[var(--chat-surface)] hover:text-destructive disabled:opacity-50"
+              >
+                <Trash2Icon className="size-3.5" />
+              </button>
+            </div>
           ))}
 
           {sessions.length === 0 && (
