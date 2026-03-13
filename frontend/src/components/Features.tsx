@@ -324,13 +324,7 @@ export default function Features() {
           <SlideCounter scrollYProgress={scrollYProgress} />
 
           {/* CTA */}
-          <div style={{
-            position: 'absolute', bottom: '24px', right: '24px', zIndex: 10,
-          }}>
-            <a href="/dashboard" className="btn-primary" style={{ fontSize: '13px', padding: '10px 20px' }}>
-              Get Started <ArrowRight size={14} />
-            </a>
-          </div>
+  
         </div>
       </div>
 

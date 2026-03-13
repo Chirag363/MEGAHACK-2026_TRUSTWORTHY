@@ -662,3 +662,184 @@ Instruction: Generate a concise visualization plan for the Superstore Sales data
 2026-03-14 01:54:19 | INFO | app.api | [request:de1ac1ee] completed GET /api/v1/chat/sessions status=200 duration_ms=126.66
 2026-03-14 01:54:20 | INFO | app.api | [request:682c5220] started GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158
 2026-03-14 01:54:20 | INFO | app.api | [request:682c5220] completed GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158 status=200 duration_ms=13.20
+2026-03-14 02:14:17 | INFO | app.services.chat_session_service | ChatSessionService connected to MongoDB db=agent-orc collection=chat_sessions
+2026-03-14 02:16:20 | INFO | app.api | [request:db2c436b] started GET /api/v1/chat/sessions
+2026-03-14 02:16:32 | ERROR | app.api | [request:db2c436b] unhandled exception
+Traceback (most recent call last):
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\pymongo\synchronous\pool.py", line 451, in receive_message
+    return receive_message(self, request_id, self.max_message_size)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\pymongo\network_layer.py", line 759, in receive_message
+    length, _, response_to, op_code = _UNPACK_HEADER(receive_data(conn, 16, deadline))
+                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\pymongo\network_layer.py", line 379, in receive_data
+    raise OSError("connection closed")
+OSError: connection closed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\app\api.py", line 69, in request_logging_middleware
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\starlette\middleware\base.py", line 168, in call_next
+    raise app_exc from app_exc.__cause__ or app_exc.__context__
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\starlette\middleware\base.py", line 144, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\starlette\middleware\cors.py", line 87, in __call__
+    await self.app(scope, receive, send)
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\fastapi\routing.py", line 130, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\fastapi\routing.py", line 116, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\fastapi\routing.py", line 670, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\fastapi\routing.py", line 326, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\starlette\concurrency.py", line 32, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\anyio\to_thread.py", line 63, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2502, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 986, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\app\api.py", line 319, in list_sessions
+    sessions = session_service.list_sessions(user_id=user_id, limit=limit)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\app\services\chat_session_service.py", line 291, in list_sessions
+    sessions = [self._session_from_doc(item) for item in cursor]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\app\services\chat_session_service.py", line 291, in <listcomp>
+    sessions = [self._session_from_doc(item) for item in cursor]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\pymongo\synchronous\cursor.py", line 1289, in __next__
+    return self.next()
+           ^^^^^^^^^^^
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\pymongo\synchronous\cursor.py", line 1265, in next
+    if len(self._data) or self._refresh():
+                          ^^^^^^^^^^^^^^^
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\pymongo\synchronous\cursor.py", line 1213, in _refresh
+    self._send_message(q)
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\pymongo\synchronous\cursor.py", line 1108, in _send_message
+    response = client._run_operation(
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\pymongo\_csot.py", line 125, in csot_wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\pymongo\synchronous\mongo_client.py", line 1938, in _run_operation
+    return self._retryable_read(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\pymongo\synchronous\mongo_client.py", line 2048, in _retryable_read
+    return self._retry_internal(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\pymongo\_csot.py", line 125, in csot_wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\pymongo\synchronous\mongo_client.py", line 2014, in _retry_internal
+    ).run()
+      ^^^^^
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\pymongo\synchronous\mongo_client.py", line 2768, in run
+    self._check_last_error()
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\pymongo\synchronous\mongo_client.py", line 2849, in _check_last_error
+    raise self._last_error
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\pymongo\synchronous\mongo_client.py", line 2763, in run
+    return self._read() if self._is_read else self._write()
+           ^^^^^^^^^^^^
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\pymongo\synchronous\mongo_client.py", line 2924, in _read
+    return self._func(self._session, self._server, conn, read_pref)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\pymongo\synchronous\mongo_client.py", line 1929, in _cmd
+    return server.run_operation(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\pymongo\synchronous\helpers.py", line 47, in inner
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\pymongo\synchronous\server.py", line 208, in run_operation
+    reply = conn.receive_message(request_id)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\pymongo\synchronous\pool.py", line 454, in receive_message
+    self._raise_connection_failure(error)
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\pymongo\synchronous\pool.py", line 628, in _raise_connection_failure
+    _raise_connection_failure(self.address, error, timeout_details=details)
+  File "D:\TrustWorthy\MEGAHACK-2026_TRUSTWORTHY\backend\.venv\Lib\site-packages\pymongo\pool_shared.py", line 148, in _raise_connection_failure
+    raise AutoReconnect(msg) from error
+pymongo.errors.AutoReconnect: democluster-shard-00-02.zczir.mongodb.net:27017: connection closed (configured timeouts: connectTimeoutMS: 20000.0ms)
+2026-03-14 02:19:01 | INFO | app.services.chat_session_service | ChatSessionService connected to MongoDB db=agent-orc collection=chat_sessions
+2026-03-14 02:19:09 | INFO | app.api | [request:98501c89] started GET /api/v1/chat/sessions
+2026-03-14 02:19:09 | INFO | app.api | [request:98501c89] completed GET /api/v1/chat/sessions status=200 duration_ms=28.29
+2026-03-14 02:19:10 | INFO | app.api | [request:cde0371a] started GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158
+2026-03-14 02:19:10 | INFO | app.api | [request:cde0371a] completed GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158 status=200 duration_ms=14.42
+2026-03-14 02:19:23 | INFO | app.api | [request:d7da012d] started GET /api/v1/chat/sessions
+2026-03-14 02:19:23 | INFO | app.api | [request:e5bcfe46] started GET /api/v1/chat/sessions
+2026-03-14 02:19:23 | INFO | app.api | [request:d7da012d] completed GET /api/v1/chat/sessions status=200 duration_ms=15.15
+2026-03-14 02:19:23 | INFO | app.api | [request:e5bcfe46] completed GET /api/v1/chat/sessions status=200 duration_ms=74.30
+2026-03-14 02:19:23 | INFO | app.api | [request:a8451911] started GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158
+2026-03-14 02:19:23 | INFO | app.api | [request:a8451911] completed GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158 status=200 duration_ms=8.65
+2026-03-14 02:19:49 | INFO | app.api | [request:fbd29e15] started GET /api/v1/chat/sessions
+2026-03-14 02:19:49 | INFO | app.api | [request:e57e2663] started GET /api/v1/chat/sessions
+2026-03-14 02:19:49 | INFO | app.api | [request:fbd29e15] completed GET /api/v1/chat/sessions status=200 duration_ms=49.75
+2026-03-14 02:19:49 | INFO | app.api | [request:e57e2663] completed GET /api/v1/chat/sessions status=200 duration_ms=13.23
+2026-03-14 02:19:49 | INFO | app.api | [request:6912c99e] started GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158
+2026-03-14 02:19:49 | INFO | app.api | [request:6912c99e] completed GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158 status=200 duration_ms=14.47
+2026-03-14 02:24:18 | INFO | app.api | [request:27d08abf] started GET /api/v1/chat/sessions
+2026-03-14 02:24:18 | INFO | app.api | [request:6b73668b] started GET /api/v1/chat/sessions
+2026-03-14 02:24:18 | INFO | app.api | [request:6b73668b] completed GET /api/v1/chat/sessions status=200 duration_ms=11.30
+2026-03-14 02:24:18 | INFO | app.api | [request:27d08abf] completed GET /api/v1/chat/sessions status=200 duration_ms=14.91
+2026-03-14 02:26:02 | INFO | app.api | [request:5fdf9c4e] started GET /api/v1/chat/sessions
+2026-03-14 02:26:02 | INFO | app.api | [request:5fdf9c4e] completed GET /api/v1/chat/sessions status=200 duration_ms=41.38
+2026-03-14 02:26:02 | INFO | app.api | [request:8c60b295] started GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158
+2026-03-14 02:26:03 | INFO | app.api | [request:8c60b295] completed GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158 status=200 duration_ms=19.15
+2026-03-14 02:26:06 | INFO | app.api | [request:bb681c22] started GET /api/v1/chat/sessions
+2026-03-14 02:26:06 | INFO | app.api | [request:bb681c22] completed GET /api/v1/chat/sessions status=200 duration_ms=16.78
+2026-03-14 02:26:06 | INFO | app.api | [request:44dafc70] started GET /api/v1/chat/sessions
+2026-03-14 02:26:06 | INFO | app.api | [request:44dafc70] completed GET /api/v1/chat/sessions status=200 duration_ms=28.48
+2026-03-14 02:26:06 | INFO | app.api | [request:98d14c06] started GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158
+2026-03-14 02:26:06 | INFO | app.api | [request:98d14c06] completed GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158 status=200 duration_ms=16.35
+2026-03-14 02:51:23 | INFO | app.api | [request:d88cd4be] started GET /api/v1/chat/sessions
+2026-03-14 02:51:24 | INFO | app.api | [request:d88cd4be] completed GET /api/v1/chat/sessions status=200 duration_ms=103.51
+2026-03-14 02:51:24 | INFO | app.api | [request:2519038f] started GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158
+2026-03-14 02:51:24 | INFO | app.api | [request:2519038f] completed GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158 status=200 duration_ms=96.92
+2026-03-14 02:55:40 | INFO | app.api | [request:9e7892cf] started GET /api/v1/chat/sessions
+2026-03-14 02:55:40 | INFO | app.api | [request:9e7892cf] completed GET /api/v1/chat/sessions status=200 duration_ms=14.30
+2026-03-14 02:55:40 | INFO | app.api | [request:edd19f5b] started GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158
+2026-03-14 02:55:40 | INFO | app.api | [request:edd19f5b] completed GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158 status=200 duration_ms=9.66
+2026-03-14 02:55:53 | INFO | app.api | [request:c6d61d70] started GET /api/v1/chat/sessions
+2026-03-14 02:55:53 | INFO | app.api | [request:c6d61d70] completed GET /api/v1/chat/sessions status=200 duration_ms=12.95
+2026-03-14 02:55:53 | INFO | app.api | [request:1aea46b9] started GET /api/v1/chat/sessions
+2026-03-14 02:55:53 | INFO | app.api | [request:1aea46b9] completed GET /api/v1/chat/sessions status=200 duration_ms=8.48
+2026-03-14 02:55:53 | INFO | app.api | [request:b78bb38b] started GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158
+2026-03-14 02:55:53 | INFO | app.api | [request:b78bb38b] completed GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158 status=200 duration_ms=9.47
+2026-03-14 03:06:46 | INFO | app.api | [request:4156b724] started GET /api/v1/chat/sessions
+2026-03-14 03:06:46 | INFO | app.api | [request:4156b724] completed GET /api/v1/chat/sessions status=200 duration_ms=13.21
+2026-03-14 03:06:47 | INFO | app.api | [request:06c453db] started GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158
+2026-03-14 03:06:47 | INFO | app.api | [request:06c453db] completed GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158 status=200 duration_ms=13.22
+2026-03-14 03:07:05 | INFO | app.api | [request:b003615f] started GET /api/v1/chat/sessions
+2026-03-14 03:07:05 | INFO | app.api | [request:b003615f] completed GET /api/v1/chat/sessions status=200 duration_ms=11.96
+2026-03-14 03:07:05 | INFO | app.api | [request:855d1633] started GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158
+2026-03-14 03:07:05 | INFO | app.api | [request:855d1633] completed GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158 status=200 duration_ms=14.70

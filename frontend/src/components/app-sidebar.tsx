@@ -90,7 +90,47 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
   const pathname = usePathname()
 
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
+    <Sidebar collapsible="offcanvas" className="app-shell-sidebar" {...props}>
+
+      <style>{`
+        html[data-theme='light'] .app-shell-sidebar [data-slot='sidebar-inner'],
+        html[data-theme='light'] .app-shell-sidebar [data-sidebar='sidebar'] {
+          background: #ffffff !important;
+          color: #000000 !important;
+        }
+        html[data-theme='light'] .app-shell-sidebar [data-slot='sidebar-container'] {
+          border-color: rgba(15, 23, 42, 0.16);
+        }
+        html[data-theme='light'] .app-shell-sidebar .sidebar-brand-title,
+        html[data-theme='light'] .app-shell-sidebar .sidebar-text,
+        html[data-theme='light'] .app-shell-sidebar .sidebar-link {
+          color: #000000 !important;
+        }
+        html[data-theme='light'] .app-shell-sidebar .sidebar-muted,
+        html[data-theme='light'] .app-shell-sidebar .sidebar-section-label {
+          color: #475569 !important;
+        }
+        html[data-theme='light'] .app-shell-sidebar .sidebar-separator {
+          background: linear-gradient(90deg, transparent, rgba(15, 23, 42, 0.16), transparent) !important;
+        }
+        html[data-theme='light'] .app-shell-sidebar .sidebar-back-link {
+          background: #ffffff !important;
+          border-color: rgba(15, 23, 42, 0.18) !important;
+          color: #0f172a !important;
+        }
+        html[data-theme='light'] .app-shell-sidebar .sidebar-back-link:hover {
+          background: #f8fafc !important;
+          color: #020617 !important;
+        }
+        html[data-theme='light'] .app-shell-sidebar .sidebar-nav-btn:hover {
+          background: rgba(15, 23, 42, 0.06) !important;
+        }
+        html[data-theme='light'] .app-shell-sidebar .sidebar-active {
+          background: linear-gradient(90deg, rgba(37, 99, 235, 0.12), rgba(37, 99, 235, 0.04), transparent) !important;
+          color: #0f172a !important;
+          box-shadow: inset 2px 0 0 rgba(37, 99, 235, 0.6) !important;
+        }
+      `}</style>
 
       {/* ── Brand header ── */}
       <SidebarHeader className="px-3 pb-3 pt-4">
@@ -110,7 +150,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
                   </div>
                 </div>
                 <div className="flex min-w-0 flex-col">
-                  <span className="text-[15px] font-semibold tracking-tight text-white">
+                  <span className="sidebar-brand-title text-[15px] font-semibold tracking-tight text-white">
                     InsightForge
                   </span>
                 </div>
@@ -120,11 +160,11 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
         </SidebarMenu>
 
         {/* Separator with gradient */}
-        <div className="mt-2 h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent" />
+        <div className="sidebar-separator mt-2 h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent" />
 
         <Link
-          href="/"
-          className="mt-3 inline-flex items-center gap-2 rounded-lg border border-white/12 bg-white/[0.03] px-3 py-2 text-xs text-white/70 transition hover:bg-white/[0.08] hover:text-white"
+          href="/#home"
+          className="sidebar-back-link sidebar-link mt-3 inline-flex items-center gap-2 rounded-lg border border-white/12 bg-white/[0.03] px-3 py-2 text-xs text-white/70 transition hover:bg-white/[0.08] hover:text-white"
         >
           <ArrowLeftIcon className="size-3.5" />
           Back to Landing Page
@@ -135,7 +175,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
       <SidebarContent className="px-3 pt-2">
         <SidebarGroup className="p-0">
           {/* Section label */}
-          <p className="mb-2 px-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/28">
+          <p className="sidebar-section-label mb-2 px-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/28">
             Workspace
           </p>
 
@@ -152,13 +192,14 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
                       isActive={isActive}
                       className={cn(
                         // Base
-                        "group/nav h-auto cursor-pointer gap-3 rounded-xl px-3 py-2.5 transition-all duration-200",
+                        "sidebar-nav-btn group/nav h-auto cursor-pointer gap-3 rounded-xl px-3 py-2.5 transition-all duration-200",
                         // Default text
                         "text-sidebar-foreground/60 hover:text-white",
                         // Hover bg
                         "hover:bg-white/[0.06]",
                         // Active overrides
                         isActive && [
+                          "sidebar-active",
                           "bg-gradient-to-r from-cyan-400/[0.13] via-cyan-400/[0.06] to-transparent",
                           "text-white shadow-[inset_2px_0_0_rgba(34,211,238,0.65)]",
                           "hover:bg-gradient-to-r hover:from-cyan-400/[0.16] hover:via-cyan-400/[0.08] hover:to-transparent",
@@ -179,7 +220,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
                         <div className="flex min-w-0 flex-col">
                           <span
                             className={cn(
-                              "text-[13px] font-medium leading-tight",
+                              "sidebar-text text-[13px] font-medium leading-tight",
                               isActive ? "text-white" : "text-white/65 group-hover/nav:text-white/85"
                             )}
                           >
@@ -187,7 +228,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
                           </span>
                           <span
                             className={cn(
-                              "text-[10px] leading-tight",
+                              "sidebar-muted text-[10px] leading-tight",
                               isActive ? "text-cyan-300/60" : "text-white/28 group-hover/nav:text-white/40"
                             )}
                           >
@@ -204,11 +245,11 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
         </SidebarGroup>
 
         {/* Separator */}
-        <div className="my-3 h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        <div className="sidebar-separator my-3 h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
         {/* ── Active Agents ── */}
         <SidebarGroup className="p-0">
-          <p className="mb-2 px-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/28">
+          <p className="sidebar-section-label mb-2 px-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/28">
             Active Agents
           </p>
           <SidebarGroupContent>
@@ -222,10 +263,10 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
                     <agent.icon className={cn("size-3", agent.color)} />
                   </div>
                   <div className="flex min-w-0 flex-col">
-                    <span className="text-[12px] font-medium leading-tight text-white/60">
+                    <span className="sidebar-text text-[12px] font-medium leading-tight text-white/60">
                       {agent.name}
                     </span>
-                    <span className="text-[10px] leading-tight text-white/25">
+                    <span className="sidebar-muted text-[10px] leading-tight text-white/25">
                       {agent.description}
                     </span>
                   </div>
@@ -246,7 +287,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
 
       {/* ── User footer ── */}
       <SidebarFooter className="px-3 pb-4 pt-0">
-        <div className="mb-3 h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        <div className="sidebar-separator mb-3 h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
         <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>

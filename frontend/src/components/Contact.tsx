@@ -2,15 +2,8 @@
 
 import { motion, useInView } from 'framer-motion';
 import { useRef, useEffect, useCallback, useState } from 'react';
-import { Send, MessageSquare, Mail, MapPin, Phone } from 'lucide-react';
+import { Send, MessageSquare } from 'lucide-react';
 import { gsap } from 'gsap';
-
-/* ─── contact info data ─── */
-const contactInfo = [
-  { icon: Mail,   label: 'Email',    value: 'hello@insightforge.ai', href: 'mailto:hello@insightforge.ai' },
-  { icon: Phone,  label: 'Phone',    value: '+1 (800) INSIGHT',      href: 'tel:+18004676744' },
-  { icon: MapPin, label: 'Location', value: 'San Francisco, CA',     href: '#' },
-];
 
 /* ─── particle helpers ─── */
 const GLOW = '255,255,255';
@@ -67,7 +60,6 @@ function AnimatedCard({ children, style, className }: { children: React.ReactNod
     });
   }, [initParticles]);
 
-  /* glow-on-move */
   const onMove = useCallback((e: MouseEvent) => {
     if (!ref.current) return;
     const r = ref.current.getBoundingClientRect();
@@ -76,7 +68,6 @@ function AnimatedCard({ children, style, className }: { children: React.ReactNod
     ref.current.style.setProperty('--glow-intensity', '1');
   }, []);
 
-  /* click ripple */
   const onClick = useCallback((e: MouseEvent) => {
     if (!ref.current) return;
     const r = ref.current.getBoundingClientRect();
@@ -92,19 +83,20 @@ function AnimatedCard({ children, style, className }: { children: React.ReactNod
     const el = ref.current;
     if (!el) return;
 
-    const enter = () => { hov.current = true;  spawn(); el.style.setProperty('--glow-intensity', '1'); };
+    const enter = () => { hov.current = true; spawn(); el.style.setProperty('--glow-intensity', '1'); };
     const leave = () => { hov.current = false; clear(); el.style.setProperty('--glow-intensity', '0'); };
 
     el.addEventListener('mouseenter', enter);
     el.addEventListener('mouseleave', leave);
-    el.addEventListener('mousemove',  onMove as EventListener);
-    el.addEventListener('click',      onClick as EventListener);
+    el.addEventListener('mousemove', onMove as EventListener);
+    el.addEventListener('click', onClick as EventListener);
+
     return () => {
       hov.current = false;
       el.removeEventListener('mouseenter', enter);
       el.removeEventListener('mouseleave', leave);
-      el.removeEventListener('mousemove',  onMove as EventListener);
-      el.removeEventListener('click',      onClick as EventListener);
+      el.removeEventListener('mousemove', onMove as EventListener);
+      el.removeEventListener('click', onClick as EventListener);
       clear();
     };
   }, [spawn, clear, onMove, onClick]);
@@ -122,11 +114,12 @@ function AnimatedCard({ children, style, className }: { children: React.ReactNod
   );
 }
 
-/* ─────────────────────────────────────────────────────── */
+/* ───────────────────────────────────────── */
 
 export default function Contact() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-80px' });
+
   const [formData, setFormData] = useState({ name: '', email: '', company: '', message: '' });
   const [sent, setSent] = useState(false);
 
@@ -139,13 +132,13 @@ export default function Contact() {
 
   return (
     <section id="contact" ref={ref} className="section">
+
       <style>{`
         .animated-glass-card {
           background: var(--bg-card);
           border: 1px solid var(--border);
           border-radius: 16px;
           backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
           transition: all 0.32s ease;
         }
         .animated-glass-card:hover {
@@ -154,112 +147,162 @@ export default function Contact() {
           transform: translateY(-3px);
           box-shadow: 0 16px 48px rgba(255,255,255,0.04);
         }
-        /* border glow */
-        .animated-glass-card::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          padding: 1px;
-          background: radial-gradient(
-            220px circle at var(--glow-x) var(--glow-y),
-            rgba(${GLOW}, calc(var(--glow-intensity) * 0.7)) 0%,
-            rgba(${GLOW}, calc(var(--glow-intensity) * 0.3)) 40%,
-            transparent 65%
-          );
-          border-radius: inherit;
-          -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-          -webkit-mask-composite: xor;
-          mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-          mask-composite: exclude;
-          pointer-events: none;
-          z-index: 1;
+        html[data-theme='light'] #contact .animated-glass-card {
+          background: #ffffff;
+          border-color: rgba(15,23,42,0.16);
+          box-shadow: 0 10px 28px rgba(15,23,42,0.06);
         }
-        @media (max-width: 768px) { .contact-grid { grid-template-columns: 1fr !important; } }
-        @media (max-width: 768px) { .contact-form-row { grid-template-columns: 1fr !important; } }
+        html[data-theme='light'] #contact .animated-glass-card:hover {
+          background: #ffffff;
+          border-color: rgba(15,23,42,0.28);
+          box-shadow: 0 16px 36px rgba(15,23,42,0.10);
+        }
+        html[data-theme='light'] #contact .section-badge {
+          background: rgba(15,23,42,0.05);
+          border-color: rgba(15,23,42,0.14);
+          color: #334155;
+        }
+        html[data-theme='light'] #contact .input-field {
+          background: #ffffff;
+          border-color: rgba(15,23,42,0.22);
+          color: #0f172a;
+        }
+        html[data-theme='light'] #contact .input-field::placeholder {
+          color: #64748b;
+        }
+        html[data-theme='light'] #contact .input-field:focus {
+          border-color: rgba(37,99,235,0.45);
+          background: #ffffff;
+          box-shadow: 0 0 0 3px rgba(37,99,235,0.10);
+        }
+        @media (max-width:768px){
+          .contact-grid{grid-template-columns:1fr!important;}
+        }
       `}</style>
 
       <div className="container">
-        <motion.div initial={{ opacity: 0, y: 28 }} animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.55 }} style={{ marginBottom: '48px' }}>
-          <div className="section-badge"><MessageSquare size={12} />Get In Touch</div>
-          <h2 className="section-title">Let&apos;s Build Something <span className="gradient-text">Remarkable</span></h2>
-          <p className="section-desc">Have a data challenge or want to see InsightForge in action? Our team is ready to help.</p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 28 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.55 }}
+          style={{ marginBottom: '48px' }}
+        >
+          <div className="section-badge"><MessageSquare size={12}/>Get In Touch</div>
+          <h2 className="section-title">
+            Let's Build Something <span className="gradient-text">Remarkable</span>
+          </h2>
+          <p className="section-desc">
+            Have a data challenge or want to see InsightForge in action?
+          </p>
         </motion.div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1.15fr 1fr', gap: '30px', alignItems: 'stretch' }} className="contact-grid">
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1.15fr 1fr',
+            gap: '30px'
+          }}
+          className="contact-grid"
+        >
 
-          {/* ── Left Video ── */}
-          <motion.div initial={{ opacity: 0, x: -24 }} animate={inView ? { opacity: 1, x: 0 } : {}} transition={{ duration: 0.55 }}>
-            <AnimatedCard style={{ padding: '32px', marginBottom: '20px' }}>
-              <h3 style={{ fontFamily: 'Outfit,sans-serif', fontSize: '18px', fontWeight: 700, marginBottom: '22px' }}>Contact Information</h3>
-              {contactInfo.map(({ icon: Icon, label, value, href }) => (
-                <a key={label} href={href} style={{ display: 'flex', alignItems: 'center', gap: '14px', textDecoration: 'none', color: 'inherit', padding: '12px 14px', borderRadius: '10px', transition: 'background 0.2s' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', flexShrink: 0, background: 'rgba(255,255,255,0.06)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Icon size={17} color="#bbb" />
-                  </div>
-                  <div>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '2px' }}>{label}</div>
-                    <div style={{ fontSize: '14px', fontWeight: 500 }}>{value}</div>
-                  </div>
-                </a>
-              ))}
-            </AnimatedCard>
+          {/* LEFT VIDEO */}
+          <motion.div
+            initial={{ opacity: 0, x: -24 }}
+            animate={inView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.55 }}
+          >
+            <AnimatedCard style={{ padding: 0, height: '100%', borderRadius: '0px' }}>
 
-            <AnimatedCard style={{ padding: '24px' }}>
-              <h4 style={{ fontFamily: 'Outfit,sans-serif', fontSize: '14px', fontWeight: 700, marginBottom: '14px' }}>Support Hours</h4>
-              {[
-                { day: 'Mon – Fri', hours: '9 AM – 6 PM PST' },
-                { day: 'Saturday',  hours: '10 AM – 4 PM PST' },
-                { day: 'Sunday',    hours: 'Closed' },
-              ].map(({ day, hours }) => (
-                <div key={day} style={{ display: 'flex', justifyContent: 'space-between', padding: '9px 0', borderBottom: '1px solid var(--border)', fontSize: '13px' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>{day}</span>
-                  <span style={{ fontWeight: 500 }}>{hours}</span>
-                </div>
-              ))}
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  borderRadius: '0px'
+                }}
+              >
+                <source src="/videos/robot.mp4" type="video/mp4" />
+              </video>
+
             </AnimatedCard>
           </motion.div>
 
-          {/* ── Form ── */}
-          <motion.div initial={{ opacity: 0, y: 24 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.55, delay: 0.1 }}>
+          {/* CONTACT FORM */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.55 }}
+          >
+
             <AnimatedCard style={{ padding: '36px' }}>
-              <h3 style={{ fontFamily: 'Outfit,sans-serif', fontSize: '20px', fontWeight: 700, marginBottom: '26px' }}>Send us a Message</h3>
+
+              <h3 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '26px' }}>
+                Send us a Message
+              </h3>
 
               {sent ? (
-                <motion.div initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }}
-                  style={{ textAlign: 'center', padding: '44px 20px', background: 'rgba(255,255,255,0.04)', borderRadius: '14px', border: '1px solid var(--border)' }}>
-                  <div style={{ fontSize: '44px', marginBottom: '14px' }}>✓</div>
-                  <h4 style={{ fontFamily: 'Outfit,sans-serif', fontSize: '18px', fontWeight: 700, marginBottom: '8px' }}>Message Sent!</h4>
-                  <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>We&apos;ll get back to you within 24 hours.</p>
-                </motion.div>
+                <div style={{ textAlign: 'center', padding: '40px' }}>
+                  <h4>✓ Message Sent!</h4>
+                  <p>We'll get back to you within 24 hours.</p>
+                </div>
               ) : (
+
                 <form onSubmit={handleSubmit}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '14px' }} className="contact-form-row">
-                    <div>
-                      <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, marginBottom: '7px', color: 'var(--text-secondary)' }}>Full Name *</label>
-                      <input required className="input-field" placeholder="John Smith" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
-                    </div>
-                    <div>
-                      <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, marginBottom: '7px', color: 'var(--text-secondary)' }}>Email *</label>
-                      <input required type="email" className="input-field" placeholder="john@company.com" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
-                    </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '14px' }}>
+                    <input
+                      required
+                      placeholder="Full Name"
+                      className="input-field"
+                      value={formData.name}
+                      onChange={e => setFormData({ ...formData, name: e.target.value })}
+                    />
+
+                    <input
+                      required
+                      type="email"
+                      placeholder="Email"
+                      className="input-field"
+                      value={formData.email}
+                      onChange={e => setFormData({ ...formData, email: e.target.value })}
+                    />
                   </div>
-                  <div style={{ marginBottom: '14px' }}>
-                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, marginBottom: '7px', color: 'var(--text-secondary)' }}>Company</label>
-                    <input className="input-field" placeholder="Your Company Inc." value={formData.company} onChange={e => setFormData({ ...formData, company: e.target.value })} />
-                  </div>
-                  <div style={{ marginBottom: '24px' }}>
-                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, marginBottom: '7px', color: 'var(--text-secondary)' }}>Message *</label>
-                    <textarea required className="input-field" placeholder="Tell us about your data challenges..." value={formData.message} onChange={e => setFormData({ ...formData, message: e.target.value })} />
-                  </div>
-                  <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '15px' }}>
-                    Send Message <Send size={15} />
+
+                  <input
+                    placeholder="Company"
+                    className="input-field"
+                    style={{ marginBottom: '14px' }}
+                    value={formData.company}
+                    onChange={e => setFormData({ ...formData, company: e.target.value })}
+                  />
+
+                  <textarea
+                    required
+                    placeholder="Tell us about your data challenges..."
+                    className="input-field"
+                    style={{ marginBottom: '24px' }}
+                    value={formData.message}
+                    onChange={e => setFormData({ ...formData, message: e.target.value })}
+                  />
+
+                  <button
+                    type="submit"
+                    className="btn-primary"
+                    style={{ width: '100%', padding: '15px' }}
+                  >
+                    Send Message <Send size={15}/>
                   </button>
+
                 </form>
               )}
+
             </AnimatedCard>
+
           </motion.div>
 
         </div>
