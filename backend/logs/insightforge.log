@@ -843,3 +843,7 @@ pymongo.errors.AutoReconnect: democluster-shard-00-02.zczir.mongodb.net:27017: c
 2026-03-14 03:07:05 | INFO | app.api | [request:b003615f] completed GET /api/v1/chat/sessions status=200 duration_ms=11.96
 2026-03-14 03:07:05 | INFO | app.api | [request:855d1633] started GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158
 2026-03-14 03:07:05 | INFO | app.api | [request:855d1633] completed GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158 status=200 duration_ms=14.70
+2026-03-14 04:45:06 | INFO | app.services.chat_session_service | ChatSessionService connected to MongoDB db=agent-orc collection=chat_sessions
+2026-03-14 04:45:13 | INFO | app.services.chat_session_service | ChatSessionService connected to MongoDB db=agent-orc collection=chat_sessions
+2026-03-14 04:48:41 | INFO | app.services.chat_session_service | ChatSessionService connected to MongoDB db=agent-orc collection=chat_sessions
+2026-03-14 04:51:43 | INFO | app.services.chat_session_service | ChatSessionService connected to MongoDB db=agent-orc collection=chat_sessions
