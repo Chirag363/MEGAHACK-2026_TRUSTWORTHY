@@ -9,8 +9,8 @@ import {
 import {
   Message,
   MessageContent,
-  MessageResponse,
 } from "@/components/ai-elements/message";
+import { RichMessageResponse } from "@/components/ai-elements/rich-message-response";
 import {
   Reasoning,
   ReasoningContent,
@@ -255,9 +255,9 @@ export default function DashboardChat({
                      * The cursor lives OUTSIDE MessageResponse so Streamdown
                      * always receives a clean string as children.
                      */}
-                    <MessageResponse isAnimating={isStreaming}>
+                    <RichMessageResponse isAnimating={isStreaming}>
                       {message.content}
-                    </MessageResponse>
+                    </RichMessageResponse>
                     {isStreaming && (
                       <span
                         aria-hidden

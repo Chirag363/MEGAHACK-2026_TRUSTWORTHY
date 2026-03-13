@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import math
 import statistics
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -44,6 +45,88 @@ class DatasetToolService:
         except ValueError:
             return None
 
+    @staticmethod
+    def _normalize_column_name(value: str) -> str:
+        return "".join(char.lower() for char in str(value) if char.isalnum())
+
+    def _resolve_column(self, requested: str, columns: list[str]) -> str | None:
+        candidate = str(requested or "").strip()
+        if not candidate:
+            return None
+
+        exact_lower = {column.lower(): column for column in columns}
+        if candidate.lower() in exact_lower:
+            return exact_lower[candidate.lower()]
+
+        normalized = self._normalize_column_name(candidate)
+        exact_normalized = [
+            column for column in columns if self._normalize_column_name(column) == normalized
+        ]
+        if len(exact_normalized) == 1:
+            return exact_normalized[0]
+
+        partial_matches = [
+            column for column in columns if normalized and normalized in self._normalize_column_name(column)
+        ]
+        if len(partial_matches) == 1:
+            return partial_matches[0]
+
+        return None
+
+    @staticmethod
+    def _parse_datetime(value: Any) -> datetime | None:
+        if isinstance(value, datetime):
+            return value
+        if value is None:
+            return None
+
+        text = str(value).strip()
+        if not text or text.lower() in {"na", "nan", "null", "none"}:
+            return None
+
+        iso_candidate = text.replace("Z", "+00:00")
+        try:
+            return datetime.fromisoformat(iso_candidate)
+        except ValueError:
+            pass
+
+        formats = (
+            "%Y-%m-%d",
+            "%Y/%m/%d",
+            "%Y-%m-%d %H:%M:%S",
+            "%Y/%m/%d %H:%M:%S",
+            "%m/%d/%Y",
+            "%d/%m/%Y",
+            "%m/%d/%y",
+            "%d/%m/%y",
+            "%m-%d-%Y",
+            "%d-%m-%Y",
+        )
+        for fmt in formats:
+            try:
+                return datetime.strptime(text, fmt)
+            except ValueError:
+                continue
+
+        return None
+
+    @staticmethod
+    def _bucket_datetime(value: datetime, frequency: str) -> tuple[str, tuple[int, ...]]:
+        selected = str(frequency or "month").strip().lower()
+
+        if selected == "day":
+            return value.strftime("%Y-%m-%d"), (value.year, value.month, value.day)
+        if selected == "week":
+            iso_year, iso_week, _ = value.isocalendar()
+            return f"{iso_year}-W{iso_week:02d}", (iso_year, iso_week)
+        if selected == "quarter":
+            quarter = (value.month - 1) // 3 + 1
+            return f"{value.year}-Q{quarter}", (value.year, quarter)
+        if selected == "year":
+            return str(value.year), (value.year,)
+
+        return value.strftime("%Y-%m"), (value.year, value.month)
+
     def build_tools(self):
         @tool("dataset_schema")
         def dataset_schema() -> str:
@@ -75,6 +158,50 @@ class DatasetToolService:
             _, rows = self._load()
             limited = max(1, min(int(n), 20))
             return json.dumps(rows[:limited], ensure_ascii=True, default=str)
+
+        @tool("distinct_values")
+        def distinct_values(column: str, limit: int = 20) -> str:
+            """Return the most common distinct values for a column with counts and percentages."""
+            columns, rows = self._load()
+            resolved_column = self._resolve_column(column, columns)
+            if not resolved_column:
+                return json.dumps(
+                    {
+                        "error": f"Column '{column}' was not found.",
+                        "available_columns": columns,
+                    },
+                    ensure_ascii=True,
+                )
+
+            counter: Counter[str] = Counter()
+            non_missing = 0
+            for row in rows:
+                value = row.get(resolved_column)
+                if self._is_missing(value):
+                    continue
+                normalized = str(value).strip()
+                if not normalized:
+                    continue
+                counter[normalized] += 1
+                non_missing += 1
+
+            limited = max(1, min(int(limit), 50))
+            payload = [
+                {
+                    "value": value,
+                    "count": count,
+                    "pct": round(count / max(non_missing, 1) * 100, 2),
+                }
+                for value, count in counter.most_common(limited)
+            ]
+            return json.dumps(
+                {
+                    "column": resolved_column,
+                    "non_missing": non_missing,
+                    "values": payload,
+                },
+                ensure_ascii=True,
+            )
 
         @tool("missing_values_report")
         def missing_values_report() -> str:
@@ -124,6 +251,343 @@ class DatasetToolService:
             if not payload:
                 return json.dumps({"message": "No numeric columns detected."}, ensure_ascii=True)
             return json.dumps(payload, ensure_ascii=True)
+
+        @tool("aggregate_data")
+        def aggregate_data(
+            group_by: str,
+            value_column: str,
+            aggregation: str = "sum",
+            limit: int = 25,
+            descending: bool = True,
+        ) -> str:
+            """Group rows by one or more columns and aggregate a numeric value column.
+
+            group_by: comma-separated column names such as "Region" or "Category,Sub-Category"
+            value_column: numeric column to aggregate, such as "Sales"
+            aggregation: one of sum, avg, mean, min, max, count
+            """
+            columns, rows = self._load()
+            requested_groups = [item.strip() for item in str(group_by).split(",") if item.strip()]
+            resolved_groups = [self._resolve_column(item, columns) for item in requested_groups]
+            if not requested_groups or any(item is None for item in resolved_groups):
+                return json.dumps(
+                    {
+                        "error": f"Unable to resolve group_by columns from '{group_by}'.",
+                        "available_columns": columns,
+                    },
+                    ensure_ascii=True,
+                )
+
+            selected_aggregation = str(aggregation or "sum").strip().lower()
+            if selected_aggregation == "mean":
+                selected_aggregation = "avg"
+            if selected_aggregation not in {"sum", "avg", "min", "max", "count"}:
+                return json.dumps(
+                    {"error": "Unsupported aggregation. Use sum, avg, mean, min, max, or count."},
+                    ensure_ascii=True,
+                )
+
+            resolved_value = None
+            if selected_aggregation != "count":
+                resolved_value = self._resolve_column(value_column, columns)
+                if not resolved_value:
+                    return json.dumps(
+                        {
+                            "error": f"Value column '{value_column}' was not found.",
+                            "available_columns": columns,
+                        },
+                        ensure_ascii=True,
+                    )
+
+            grouped: dict[tuple[str, ...], dict[str, float | int | None]] = {}
+            dropped_rows = 0
+
+            for row in rows:
+                key = tuple(
+                    str(row.get(column)).strip() if not self._is_missing(row.get(column)) else "Unknown"
+                    for column in resolved_groups
+                    if column is not None
+                )
+
+                state = grouped.setdefault(
+                    key,
+                    {
+                        "count": 0,
+                        "sum": 0.0,
+                        "min": None,
+                        "max": None,
+                    },
+                )
+
+                if selected_aggregation == "count":
+                    state["count"] = int(state["count"] or 0) + 1
+                    continue
+
+                number = self._to_float(row.get(resolved_value))
+                if number is None:
+                    dropped_rows += 1
+                    continue
+
+                state["count"] = int(state["count"] or 0) + 1
+                state["sum"] = float(state["sum"] or 0.0) + number
+                state["min"] = number if state["min"] is None else min(float(state["min"]), number)
+                state["max"] = number if state["max"] is None else max(float(state["max"]), number)
+
+            results = []
+            for key, state in grouped.items():
+                if selected_aggregation == "count":
+                    value = int(state["count"] or 0)
+                elif selected_aggregation == "sum":
+                    value = round(float(state["sum"] or 0.0), 4)
+                elif selected_aggregation == "avg":
+                    count = int(state["count"] or 0)
+                    value = round(float(state["sum"] or 0.0) / count, 4) if count else None
+                elif selected_aggregation == "min":
+                    value = round(float(state["min"]), 4) if state["min"] is not None else None
+                else:
+                    value = round(float(state["max"]), 4) if state["max"] is not None else None
+
+                results.append(
+                    {
+                        **{resolved_groups[idx]: key[idx] for idx in range(len(key))},
+                        "value": value,
+                    }
+                )
+
+            results.sort(
+                key=lambda item: (
+                    item["value"] is None,
+                    item["value"] if isinstance(item["value"], (int, float)) else str(item["value"]),
+                ),
+                reverse=bool(descending),
+            )
+
+            limited = max(1, min(int(limit), 200))
+            return json.dumps(
+                {
+                    "group_by": [column for column in resolved_groups if column is not None],
+                    "value_column": resolved_value or "__row_count__",
+                    "aggregation": selected_aggregation,
+                    "dropped_rows_non_numeric": dropped_rows,
+                    "rows": results[:limited],
+                },
+                ensure_ascii=True,
+            )
+
+        @tool("time_series_aggregate")
+        def time_series_aggregate(
+            date_column: str,
+            value_column: str,
+            frequency: str = "month",
+            aggregation: str = "sum",
+            limit: int = 36,
+        ) -> str:
+            """Aggregate a numeric value over time buckets such as month, quarter, or year."""
+            columns, rows = self._load()
+            resolved_date = self._resolve_column(date_column, columns)
+            resolved_value = self._resolve_column(value_column, columns)
+            if not resolved_date or not resolved_value:
+                return json.dumps(
+                    {
+                        "error": "Unable to resolve date_column or value_column.",
+                        "available_columns": columns,
+                    },
+                    ensure_ascii=True,
+                )
+
+            selected_aggregation = str(aggregation or "sum").strip().lower()
+            if selected_aggregation == "mean":
+                selected_aggregation = "avg"
+            if selected_aggregation not in {"sum", "avg", "min", "max", "count"}:
+                return json.dumps(
+                    {"error": "Unsupported aggregation. Use sum, avg, mean, min, max, or count."},
+                    ensure_ascii=True,
+                )
+
+            buckets: dict[str, dict[str, float | int | tuple[int, ...] | None]] = {}
+            invalid_dates = 0
+            invalid_values = 0
+
+            for row in rows:
+                parsed_date = self._parse_datetime(row.get(resolved_date))
+                if parsed_date is None:
+                    invalid_dates += 1
+                    continue
+
+                bucket, sort_key = self._bucket_datetime(parsed_date, frequency)
+                state = buckets.setdefault(
+                    bucket,
+                    {
+                        "sort_key": sort_key,
+                        "count": 0,
+                        "sum": 0.0,
+                        "min": None,
+                        "max": None,
+                    },
+                )
+
+                if selected_aggregation == "count":
+                    state["count"] = int(state["count"] or 0) + 1
+                    continue
+
+                number = self._to_float(row.get(resolved_value))
+                if number is None:
+                    invalid_values += 1
+                    continue
+
+                state["count"] = int(state["count"] or 0) + 1
+                state["sum"] = float(state["sum"] or 0.0) + number
+                state["min"] = number if state["min"] is None else min(float(state["min"]), number)
+                state["max"] = number if state["max"] is None else max(float(state["max"]), number)
+
+            results = []
+            for bucket, state in sorted(
+                buckets.items(),
+                key=lambda item: item[1].get("sort_key") or (),
+            ):
+                if selected_aggregation == "count":
+                    value = int(state["count"] or 0)
+                elif selected_aggregation == "sum":
+                    value = round(float(state["sum"] or 0.0), 4)
+                elif selected_aggregation == "avg":
+                    count = int(state["count"] or 0)
+                    value = round(float(state["sum"] or 0.0) / count, 4) if count else None
+                elif selected_aggregation == "min":
+                    value = round(float(state["min"]), 4) if state["min"] is not None else None
+                else:
+                    value = round(float(state["max"]), 4) if state["max"] is not None else None
+
+                results.append({"period": bucket, "value": value})
+
+            limited = max(1, min(int(limit), 240))
+            return json.dumps(
+                {
+                    "date_column": resolved_date,
+                    "value_column": resolved_value,
+                    "frequency": str(frequency or "month").strip().lower() or "month",
+                    "aggregation": selected_aggregation,
+                    "invalid_dates": invalid_dates,
+                    "invalid_values": invalid_values,
+                    "rows": results[:limited],
+                },
+                ensure_ascii=True,
+            )
+
+        @tool("entity_performance_metrics")
+        def entity_performance_metrics(
+            entity_column: str,
+            revenue_column: str,
+            date_column: str,
+            profit_column: str = "",
+            frequency: str = "month",
+            limit: int = 25,
+        ) -> str:
+            """Compute per-entity revenue totals plus optional profit/margin and period-over-period growth."""
+            columns, rows = self._load()
+            resolved_entity = self._resolve_column(entity_column, columns)
+            resolved_revenue = self._resolve_column(revenue_column, columns)
+            resolved_date = self._resolve_column(date_column, columns)
+            resolved_profit = self._resolve_column(profit_column, columns) if profit_column else self._resolve_column("Profit", columns)
+
+            if not resolved_entity or not resolved_revenue or not resolved_date:
+                return json.dumps(
+                    {
+                        "error": "Unable to resolve entity_column, revenue_column, or date_column.",
+                        "available_columns": columns,
+                    },
+                    ensure_ascii=True,
+                )
+
+            stats: dict[str, dict[str, Any]] = {}
+            invalid_dates = 0
+            invalid_revenue = 0
+
+            for row in rows:
+                entity_value = row.get(resolved_entity)
+                entity_key = str(entity_value).strip() if not self._is_missing(entity_value) else "Unknown"
+
+                parsed_date = self._parse_datetime(row.get(resolved_date))
+                if parsed_date is None:
+                    invalid_dates += 1
+                    continue
+
+                revenue = self._to_float(row.get(resolved_revenue))
+                if revenue is None:
+                    invalid_revenue += 1
+                    continue
+
+                bucket, sort_key = self._bucket_datetime(parsed_date, frequency)
+                entity_state = stats.setdefault(
+                    entity_key,
+                    {
+                        "total_revenue": 0.0,
+                        "total_profit": 0.0,
+                        "profit_rows": 0,
+                        "periods": {},
+                        "period_sort_keys": {},
+                    },
+                )
+
+                entity_state["total_revenue"] += revenue
+                entity_state["periods"][bucket] = entity_state["periods"].get(bucket, 0.0) + revenue
+                entity_state["period_sort_keys"][bucket] = sort_key
+
+                if resolved_profit:
+                    profit = self._to_float(row.get(resolved_profit))
+                    if profit is not None:
+                        entity_state["total_profit"] += profit
+                        entity_state["profit_rows"] += 1
+
+            rows_out = []
+            for entity_name, state in stats.items():
+                sorted_periods = sorted(
+                    state["periods"].items(),
+                    key=lambda item: state["period_sort_keys"].get(item[0]) or (),
+                )
+                latest_period = sorted_periods[-1] if sorted_periods else None
+                previous_period = sorted_periods[-2] if len(sorted_periods) >= 2 else None
+
+                latest_value = latest_period[1] if latest_period else None
+                previous_value = previous_period[1] if previous_period else None
+                growth_pct = None
+                if latest_value is not None and previous_value not in (None, 0):
+                    growth_pct = round((latest_value - previous_value) / abs(previous_value) * 100, 2)
+
+                total_revenue = round(float(state["total_revenue"]), 4)
+                total_profit = round(float(state["total_profit"]), 4) if state["profit_rows"] else None
+                margin_pct = None
+                if total_profit is not None and total_revenue != 0:
+                    margin_pct = round(total_profit / total_revenue * 100, 2)
+
+                rows_out.append(
+                    {
+                        "entity": entity_name,
+                        "total_revenue": total_revenue,
+                        "total_profit": total_profit,
+                        "margin_pct": margin_pct,
+                        "latest_period": latest_period[0] if latest_period else None,
+                        "latest_period_revenue": round(float(latest_value), 4) if latest_value is not None else None,
+                        "previous_period": previous_period[0] if previous_period else None,
+                        "previous_period_revenue": round(float(previous_value), 4) if previous_value is not None else None,
+                        "growth_pct": growth_pct,
+                    }
+                )
+
+            rows_out.sort(key=lambda item: item["total_revenue"], reverse=True)
+            limited = max(1, min(int(limit), 200))
+            return json.dumps(
+                {
+                    "entity_column": resolved_entity,
+                    "revenue_column": resolved_revenue,
+                    "date_column": resolved_date,
+                    "profit_column": resolved_profit,
+                    "frequency": str(frequency or "month").strip().lower() or "month",
+                    "invalid_dates": invalid_dates,
+                    "invalid_revenue": invalid_revenue,
+                    "rows": rows_out[:limited],
+                },
+                ensure_ascii=True,
+            )
 
         @tool("correlation_report")
         def correlation_report(top_n: int = 10) -> str:
@@ -349,8 +813,12 @@ class DatasetToolService:
         return [
             dataset_schema,
             sample_rows,
+            distinct_values,
             missing_values_report,
             summary_statistics,
+            aggregate_data,
+            time_series_aggregate,
+            entity_performance_metrics,
             correlation_report,
             outlier_report_iqr,
             impute_missing_values,
