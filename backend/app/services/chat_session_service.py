@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import json
 import logging
 import os
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from pathlib import Path
 from threading import Lock
 from uuid import uuid4
 
@@ -68,12 +70,18 @@ class ChatSessionSummary:
     updated_at: datetime
 
 
+_DEFAULT_STORE_PATH = Path(os.getenv("SESSIONS_FILE", "data/sessions.json"))
+
+
 class ChatSessionService:
     def __init__(self):
         self._sessions: dict[str, ChatSession] = {}
         self._lock = Lock()
         self._collection = None
+        self._store_path: Path | None = None
         self._init_mongo()
+        if self._collection is None:
+            self._init_file_store()
 
     def _init_mongo(self) -> None:
         mongo_uri = (
@@ -83,11 +91,11 @@ class ChatSessionService:
         )
 
         if not mongo_uri:
-            logger.warning("MongoDB URI not set. Falling back to in-memory chat sessions.")
+            logger.info("MongoDB URI not set. Will use file-backed session store.")
             return
 
         if MongoClient is None:
-            logger.warning("pymongo is not installed. Falling back to in-memory chat sessions.")
+            logger.warning("pymongo is not installed. Will use file-backed session store.")
             return
 
         db_name = os.getenv("MONGODB_DB_NAME", "insightforge")
@@ -101,8 +109,49 @@ class ChatSessionService:
             self._collection.create_index([("user_id", DESCENDING), ("updated_at", DESCENDING)])
             logger.info("ChatSessionService connected to MongoDB db=%s collection=%s", db_name, collection_name)
         except Exception:
-            logger.exception("Failed to connect to MongoDB. Falling back to in-memory chat sessions.")
+            logger.exception("Failed to connect to MongoDB. Will use file-backed session store.")
             self._collection = None
+
+    def _init_file_store(self) -> None:
+        """Load all sessions from the JSON file into memory, creating the file if needed."""
+        store_path = _DEFAULT_STORE_PATH
+        try:
+            store_path.parent.mkdir(parents=True, exist_ok=True)
+            if store_path.exists():
+                raw = store_path.read_text(encoding="utf-8")
+                data: list[dict] = json.loads(raw) if raw.strip() else []
+                for doc in data:
+                    try:
+                        session = self._session_from_doc(doc)
+                        self._sessions[session.session_id] = session
+                    except Exception:
+                        logger.exception("Skipping corrupt session entry in file store")
+                logger.info(
+                    "File-backed session store loaded sessions=%d path=%s",
+                    len(self._sessions),
+                    store_path,
+                )
+            else:
+                store_path.write_text("[]", encoding="utf-8")
+                logger.info("File-backed session store created path=%s", store_path)
+            self._store_path = store_path
+        except Exception:
+            logger.exception("Could not initialise file-backed session store — falling back to pure in-memory")
+            self._store_path = None
+
+    def _flush_file_store(self) -> None:
+        """Write the full in-memory session dict to disk (called inside the lock)."""
+        if self._store_path is None:
+            return
+        try:
+            docs = [self._session_to_doc(s) for s in self._sessions.values()]
+            # Serialise datetimes to ISO strings for JSON
+            self._store_path.write_text(
+                json.dumps(docs, default=str, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+        except Exception:
+            logger.exception("Failed to flush session store to disk")
 
     def _message_to_doc(self, message: ChatMessage) -> dict[str, object]:
         return {
@@ -160,6 +209,7 @@ class ChatSessionService:
 
         with self._lock:
             self._sessions[session.session_id] = session
+            self._flush_file_store()
 
     def _title_from_content(self, content: str) -> str:
         compact = " ".join(content.strip().split())
