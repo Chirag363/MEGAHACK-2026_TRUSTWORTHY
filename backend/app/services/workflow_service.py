@@ -272,16 +272,22 @@ class WorkflowService:
                 supervisor_prompt = (
                     f"You are {supervisor.role}.\n"
                     f"Objective: {supervisor.objective}\n\n"
-                    f"Business goal:\n{state['goal']}\n\n"
+                    f"User request:\n{state['goal']}\n\n"
                     f"Dataset context:\n{state['dataset_context']}\n\n"
                     f"Available worker agents:\n{worker_catalog}\n\n"
                     f"Pending agents: {pending}\n"
                     f"Completed agents: {completed}\n\n"
                     f"Current worker outputs:\n{output_snapshot}\n\n"
-                    "Do NOT dispatch every worker by default.\n"
-                    "If the goal is satisfied, choose FINISH immediately.\n"
-                    "Infer the minimum required subset of workers from the business goal and current outputs.\n"
-                    "If the user asked for a specific worker, honor it and avoid unrelated workers.\n\n"
+                    "ROUTING RULES:\n"
+                    "1. First, judge the nature of the user request.\n"
+                    "2. If it is casual conversation, a greeting, small talk, or a general question that "
+                    "does not require dataset analysis, route ONLY to casual_convo_agent (if available in "
+                    "the worker list) and then FINISH. Skip all analysis agents entirely.\n"
+                    "3. If it is a data analysis, business intelligence, or dataset-related request, "
+                    "route to the relevant analysis agents. Do NOT involve casual_convo_agent.\n"
+                    "4. Do NOT dispatch every worker by default.\n"
+                    "5. If the goal is already satisfied by current outputs, choose FINISH immediately.\n"
+                    "6. Infer the minimum required subset of workers from the request and current outputs.\n\n"
                     "Decide the next step. Respond as strict JSON with keys: "
                     "planned_agents (array of worker names), next_agent (worker name or FINISH), instruction, reason."
                 )
@@ -313,20 +319,30 @@ class WorkflowService:
                 if dry_run:
                     final_report = "[DRY-RUN] Supervisor finalized report from worker outputs."
                 else:
-                    final_prompt = (
-                        f"You are {supervisor.role}. Generate the final business intelligence report.\n"
-                        f"Business goal:\n{state['goal']}\n\n"
-                        f"Dataset context:\n{state['dataset_context']}\n\n"
-                        f"Worker outputs:\n{output_snapshot}\n\n"
-                        "Return a clear report with sections: Executive Summary, Key Findings, Risks, and Recommendations."
-                    )
-                    final_response = llm.invoke(
-                        [
-                            SystemMessage(content=f"You are {supervisor.role}."),
-                            HumanMessage(content=final_prompt),
-                        ]
-                    )
-                    final_report = WorkflowService._extract_text(final_response.content)
+                    casual_output = state["agent_outputs"].get("casual_convo_agent")
+                    non_casual_outputs = {
+                        k: v for k, v in state["agent_outputs"].items() if k != "casual_convo_agent"
+                    }
+
+                    if casual_output and not non_casual_outputs:
+                        # Casual conversation path — surface the agent's reply directly,
+                        # no structured business report needed.
+                        final_report = casual_output
+                    else:
+                        final_prompt = (
+                            f"You are {supervisor.role}. Generate the final business intelligence report.\n"
+                            f"Business goal:\n{state['goal']}\n\n"
+                            f"Dataset context:\n{state['dataset_context']}\n\n"
+                            f"Worker outputs:\n{output_snapshot}\n\n"
+                            "Return a clear report with sections: Executive Summary, Key Findings, Risks, and Recommendations."
+                        )
+                        final_response = llm.invoke(
+                            [
+                                SystemMessage(content=f"You are {supervisor.role}."),
+                                HumanMessage(content=final_prompt),
+                            ]
+                        )
+                        final_report = WorkflowService._extract_text(final_response.content)
 
                 logger.info("[run:%s] supervisor finalized report", run_id)
                 conversation.append(
