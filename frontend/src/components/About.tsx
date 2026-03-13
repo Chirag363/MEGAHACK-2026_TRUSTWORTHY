@@ -6,15 +6,15 @@ import { useRef } from 'react';
 import { Target, Lightbulb, TrendingUp, Shield, Users, Globe } from 'lucide-react';
 
 const pillars = [
-  { icon: Target,     title: 'Mission',    desc: 'Democratize data analytics so every business can make AI-powered decisions in real time.' },
-  { icon: Lightbulb, title: 'Innovation', desc: 'We orchestrate specialized AI agents that collaborate to clean, analyze, and synthesize insights.' },
-  { icon: TrendingUp, title: 'Impact',    desc: 'Reduce time-to-insight from weeks to minutes, empowering teams to act with full confidence.' },
+  { icon: Target,     title: 'The Problem',    desc: 'SMEs generate valuable data from sales, customers, inventory, and operations, but most cannot afford analysts or complex BI teams to turn it into decisions.' },
+  { icon: Lightbulb, title: 'Our Solution', desc: 'InsightForge acts as a virtual data analyst that autonomously cleans data, analyzes relationships, builds visualizations, and delivers clear business recommendations.' },
+  { icon: TrendingUp, title: 'What Makes Us Different',    desc: 'Unlike dashboard-only tools, our orchestrated AI agents interpret patterns, explain findings, and recommend actions end-to-end.' },
 ];
 
 const highlights = [
-  { icon: Shield, label: 'Enterprise-Grade Security' },
-  { icon: Users,  label: 'Multi-Agent Collaboration' },
-  { icon: Globe,  label: 'Scalable Infrastructure' },
+  { icon: Shield, label: 'Affordable Intelligence for SMEs' },
+  { icon: Users,  label: 'AI-Orchestrated Multi-Agent Workflow' },
+  { icon: Globe,  label: 'Built for Retail, Logistics, Hospitality & Services' },
 ];
 
 const fadeUp: Variants = {
@@ -35,12 +35,12 @@ export default function About() {
           style={{ marginBottom: '52px', maxWidth: '600px' }}>
           <div className="section-badge">About InsightForge</div>
           <h2 className="section-title">
-            We Built the Platform<br />
-            <span className="gradient-text">Data Teams Dream Of</span>
+            AI-Orchestrated Autonomous<br />
+            <span className="gradient-text">Data Intelligence for SMEs</span>
           </h2>
           <p className="section-desc">
-            InsightForge is an AI-orchestrated analytics platform where specialized agents handle the full pipeline —
-            from raw data to polished, boardroom-ready insights.
+            Every business generates data, but few can use it effectively. InsightForge transforms raw datasets into
+            structured insights, visualizations, and actionable recommendations for non-technical decision makers.
           </p>
         </motion.div>
 
@@ -70,9 +70,9 @@ export default function About() {
                 The Problem We Solve
               </h3>
               <p style={{ color: 'var(--text-secondary)', fontSize: '15px', lineHeight: 1.8, marginBottom: '22px' }}>
-                Traditional BI tools demand data experts, weeks of setup, and endless manual work.
-                InsightForge deploys AI agents that instantly understand your data, clean inconsistencies,
-                run deep analysis, and produce human-readable narratives — all within minutes.
+                Traditional BI tools mainly provide dashboards and charts, but still depend on skilled professionals
+                to interpret patterns and generate actions. InsightForge automates the full analytics pipeline with
+                specialized AI agents so SMEs can move from raw operational data to clear, decision-ready intelligence.
               </p>
               <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                 {highlights.map(({ icon: Icon, label }) => (
@@ -90,9 +90,9 @@ export default function About() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', minWidth: '150px' }}
               className="about-stat-col">
               {[
-                { label: 'Data Cleaned',    val: '99.2%' },
-                { label: 'Agents Active',   val: '12+' },
-                { label: 'Faster Insights', val: '40×' },
+                { label: 'Primary Users',    val: 'SMEs' },
+                { label: 'Analytics Pipeline',   val: 'Auto' },
+                { label: 'Decision Speed', val: 'Faster' },
               ].map((s) => (
                 <div key={s.label} style={{
                   padding: '16px 20px', background: 'rgba(255,255,255,0.04)',

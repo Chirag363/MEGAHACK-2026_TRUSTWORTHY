@@ -5,10 +5,10 @@ import { useRef, useEffect, useState } from 'react';
 import { TrendingUp } from 'lucide-react';
 
 const stats = [
-  { number: 10,  suffix: 'x',   label: 'Faster Insights',  desc: 'Than manual analysis' },
-  { number: 99,  suffix: '%',   label: 'Data Accuracy',     desc: 'Post AI cleaning' },
-  { number: 50,  suffix: '+',   label: 'Data Sources',      desc: 'Supported connectors' },
-  { number: 5,   suffix: 'min', label: 'Time to Insight',   desc: 'From raw upload' },
+  { number: 6,   suffix: '',     label: 'AI Agents',                 desc: 'Specialized agents in one orchestrated workflow' },
+  { number: 4,   suffix: '+',    label: 'SME Sectors',               desc: 'Retail, logistics, hospitality, and services' },
+  { number: 100, suffix: '%',    label: 'Pipeline Automation',       desc: 'From data cleaning to recommendations' },
+  { number: 3,   suffix: ' min', label: 'Time to First Insight',     desc: 'Typical turnaround is around 2-3 minutes' },
 ];
 
 function CountUp({ to, suffix }: { to: number; suffix: string }) {
