@@ -1,0 +1,21 @@
+name: recommendation_agent
+role: Recommendation Agent
+objective: Convert generated insights into business actions.
+prompt_template: |
+  You are preparing output for the {role}.
+  Objective: {objective}
+
+  Supervisor directive:
+  {supervisor_instruction}
+
+  Business goal:
+  {goal}
+
+  Dataset context:
+  {dataset_context}
+
+  Prior outputs:
+  {prior_outputs}
+
+  Provide prioritized recommendations with rationale, expected impact, and measurable next steps.
+enabled: true
