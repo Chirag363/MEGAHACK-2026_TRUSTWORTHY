@@ -3,8 +3,8 @@
 import DashboardChat, { type DashboardChatMessage } from "@/components/dashboard/dashboard-chat";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { MessageSquareMoreIcon, PaperclipIcon, PlusIcon, UploadIcon } from "lucide-react";
-import { type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { MessageSquareMoreIcon, PlusIcon } from "lucide-react";
+import { type ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 
 type ChatSessionListItem = {
   session_id: string;
@@ -85,7 +85,6 @@ export default function ChatWorkspace() {
   const [isUploading, setIsUploading] = useState(false);
   const [datasetSummary, setDatasetSummary] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const activeSession = useMemo(
     () => sessions.find((session) => session.session_id === activeSessionId) ?? null,
@@ -352,9 +351,9 @@ export default function ChatWorkspace() {
   }, [createSession, fetchSessionById, fetchSessions]);
 
   return (
-    <div className="grid flex-1 gap-4 px-4 lg:grid-cols-[300px_minmax(0,1fr)] lg:px-6">
+    <div className="grid h-full min-h-0 flex-1 gap-4 px-4 lg:grid-cols-[300px_minmax(0,1fr)] lg:px-6">
       {/* ── Chat History Sidebar ── */}
-      <aside className="flex min-h-[34rem] flex-col rounded-2xl border border-white/10 bg-black/30 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+      <aside className="flex h-full min-h-0 flex-col rounded-2xl border border-white/10 bg-black/30 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
         <div className="mb-3 flex items-center justify-between px-1">
           <h2 className="text-sm font-semibold tracking-tight text-white/80">Chat History</h2>
           <Button
@@ -405,50 +404,10 @@ export default function ChatWorkspace() {
       </aside>
 
       {/* ── Main Chat Area ── */}
-      <div className="flex min-w-0 flex-col gap-3">
-        {/* Dataset card */}
-        <div className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-          <div className="flex flex-wrap items-start justify-between gap-2">
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/55">
-                Dataset
-              </p>
-              <p className="mt-1 truncate text-sm font-medium text-white/85">
-                {hasDataset
-                  ? activeSession?.dataset_name
-                  : "Upload a CSV or JSON dataset to enable analysis chat."}
-              </p>
-              {datasetSummary && (
-                <p className="mt-1.5 text-xs leading-relaxed text-white/45">{datasetSummary}</p>
-              )}
-            </div>
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-8 shrink-0 gap-1.5 border-white/12 bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
-              disabled={isUploading || isBooting}
-              onClick={() => fileInputRef.current?.click()}
-            >
-              {isUploading ? (
-                <UploadIcon className="size-3.5 animate-pulse" />
-              ) : (
-                <PaperclipIcon className="size-3.5" />
-              )}
-              {hasDataset ? "Replace" : "Upload"}
-            </Button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".csv,.json,text/csv,application/json"
-              className="hidden"
-              onChange={uploadDataset}
-            />
-          </div>
-        </div>
-
+      <div className="flex h-full min-h-0 min-w-0 flex-col gap-3">
         {/* Chat component */}
         <DashboardChat
-          className="h-[calc(100svh-14rem)] min-h-[30rem]"
+          className="flex-1 h-full"
           messages={messages}
           onSend={sendMessage}
           onClear={() => void handleNewChat()}
