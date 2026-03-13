@@ -340,6 +340,12 @@ def list_sessions(
     ]
 
 
+@app.delete("/api/v1/chat/sessions")
+def delete_sessions(user_id: str | None = Query(default=None)):
+    deleted_count = session_service.delete_sessions(user_id=user_id)
+    return {"deleted_count": deleted_count}
+
+
 @app.post("/api/v1/chat/session", response_model=SessionResponse)
 def create_session(payload: CreateSessionRequest):
     session = session_service.create_session(

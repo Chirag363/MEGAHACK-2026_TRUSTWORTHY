@@ -77,11 +77,13 @@ class WorkflowService:
 
     @staticmethod
     def _render_prompt(template: str, values: dict[str, str]) -> str:
-        class SafeDict(dict):
-            def __missing__(self, key):
-                return ""
+        pattern = re.compile(r"\{([a-zA-Z_][a-zA-Z0-9_]*)\}")
 
-        return template.format_map(SafeDict(values))
+        def replace(match: re.Match[str]) -> str:
+            key = match.group(1)
+            return str(values.get(key, ""))
+
+        return pattern.sub(replace, template)
 
     @staticmethod
     def _invoke_agent_with_tools(agent: AgentConfig, llm, rendered_prompt: str, tools, run_id: str) -> str:
@@ -305,6 +307,10 @@ class WorkflowService:
                     "the worker list) and then FINISH. Skip all analysis agents entirely.\n"
                     "3. If it is a data analysis, business intelligence, or dataset-related request, "
                     "route to the relevant analysis agents. Do NOT involve casual_convo_agent.\n"
+                    "3a. If the user explicitly asks for charts, diagrams, dashboards, visuals, or 3D views, "
+                    "include visualization_agent in the planned subset when it is available.\n"
+                    "3b. Available visualization outputs are fenced mermaid, viz-chart, and viz-3d blocks only. "
+                    "Do not instruct workers to create PNGs, image files, or binary artifacts unless a real file-producing tool exists.\n"
                     "4. Do NOT dispatch every worker by default.\n"
                     "5. If the goal is already satisfied by current outputs, choose FINISH immediately.\n"
                     "6. Infer the minimum required subset of workers from the request and current outputs.\n\n"
@@ -367,7 +373,10 @@ class WorkflowService:
                             f"Business goal:\n{state['goal']}\n\n"
                             f"Dataset context:\n{state['dataset_context']}\n\n"
                             f"Worker outputs:\n{output_snapshot}\n\n"
-                            f"{format_instruction}"
+                            "Return a clear report with sections: Executive Summary, Visualizations, Key Findings, Risks, and Recommendations.\n"
+                            "If worker outputs contain fenced blocks with languages mermaid, viz-chart, or viz-3d, "
+                            "include the most relevant ones exactly as written under the Visualizations section.\n"
+                            "Do not rewrite or reformat JSON inside visualization fences."
                         )
                         if on_token:
                             # Stream the final report token-by-token.

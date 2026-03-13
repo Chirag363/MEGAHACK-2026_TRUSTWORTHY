@@ -2,14 +2,14 @@
 
 import { motion, useInView } from 'framer-motion';
 import { useRef, useEffect, useCallback, useState } from 'react';
-import { Mail, MapPin, Phone, Send, MessageSquare } from 'lucide-react';
+import { Send, MessageSquare, Mail, MapPin, Phone } from 'lucide-react';
 import { gsap } from 'gsap';
 
 /* ─── contact info data ─── */
 const contactInfo = [
   { icon: Mail,   label: 'Email',    value: 'hello@insightforge.ai', href: 'mailto:hello@insightforge.ai' },
   { icon: Phone,  label: 'Phone',    value: '+1 (800) INSIGHT',      href: 'tel:+18004676744' },
-  { icon: MapPin, label: 'Location', value: 'Mumbai, India',         href: '#' },
+  { icon: MapPin, label: 'Location', value: 'San Francisco, CA',     href: '#' },
 ];
 
 /* ─── particle helpers ─── */
@@ -186,9 +186,9 @@ export default function Contact() {
           <p className="section-desc">Have a data challenge or want to see InsightForge in action? Our team is ready to help.</p>
         </motion.div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '32px', alignItems: 'start' }} className="contact-grid">
+        <div style={{ display: 'grid', gridTemplateColumns: '1.15fr 1fr', gap: '30px', alignItems: 'stretch' }} className="contact-grid">
 
-          {/* ── Info ── */}
+          {/* ── Left Video ── */}
           <motion.div initial={{ opacity: 0, x: -24 }} animate={inView ? { opacity: 1, x: 0 } : {}} transition={{ duration: 0.55 }}>
             <AnimatedCard style={{ padding: '32px', marginBottom: '20px' }}>
               <h3 style={{ fontFamily: 'Outfit,sans-serif', fontSize: '18px', fontWeight: 700, marginBottom: '22px' }}>Contact Information</h3>
@@ -210,8 +210,8 @@ export default function Contact() {
             <AnimatedCard style={{ padding: '24px' }}>
               <h4 style={{ fontFamily: 'Outfit,sans-serif', fontSize: '14px', fontWeight: 700, marginBottom: '14px' }}>Support Hours</h4>
               {[
-                { day: 'Mon – Fri', hours: '9 AM – 6 PM IST' },
-                { day: 'Saturday',  hours: '10 AM – 4 PM IST' },
+                { day: 'Mon – Fri', hours: '9 AM – 6 PM PST' },
+                { day: 'Saturday',  hours: '10 AM – 4 PM PST' },
                 { day: 'Sunday',    hours: 'Closed' },
               ].map(({ day, hours }) => (
                 <div key={day} style={{ display: 'flex', justifyContent: 'space-between', padding: '9px 0', borderBottom: '1px solid var(--border)', fontSize: '13px' }}>
@@ -223,7 +223,7 @@ export default function Contact() {
           </motion.div>
 
           {/* ── Form ── */}
-          <motion.div initial={{ opacity: 0, x: 24 }} animate={inView ? { opacity: 1, x: 0 } : {}} transition={{ duration: 0.55, delay: 0.1 }}>
+          <motion.div initial={{ opacity: 0, y: 24 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.55, delay: 0.1 }}>
             <AnimatedCard style={{ padding: '36px' }}>
               <h3 style={{ fontFamily: 'Outfit,sans-serif', fontSize: '20px', fontWeight: 700, marginBottom: '26px' }}>Send us a Message</h3>
 

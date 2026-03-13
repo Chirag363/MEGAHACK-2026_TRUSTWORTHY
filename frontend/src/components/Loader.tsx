@@ -26,7 +26,7 @@ export default function Loader() {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          background: '#0a0a0a',
+          background: 'var(--bg-primary)',
           transition: 'opacity 0.7s ease',
           opacity: fadeOut ? 0 : 1,
           pointerEvents: fadeOut ? 'none' : 'all',

@@ -95,6 +95,7 @@ export default function ChatWorkspace() {
   const [isSwitching, setIsSwitching] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
   const [datasetSummary, setDatasetSummary] = useState("");
   const [datasetFileAvailable, setDatasetFileAvailable] = useState(true);
   const [artifacts, setArtifacts] = useState<DashboardArtifact[]>([]);
@@ -438,150 +439,6 @@ export default function ChatWorkspace() {
     [activeSessionId, handleNewChat, refreshSessions]
   );
 
-  const saveReport = useCallback(
-    (message: DashboardChatMessage) => {
-      try {
-        const existing = JSON.parse(localStorage.getItem("savedReports") ?? "[]") as SavedReport[];
-        if (existing.some((r) => r.messageId === message.id)) {
-          toast.info("Already saved to library.");
-          return;
-        }
-
-        const firstLine = message.content.split("\n").find((l) => l.trim().length > 0) ?? "";
-        const title = firstLine.replace(/^#+\s*/, "").slice(0, 60) || "Report";
-
-        const report: SavedReport = {
-          id: crypto.randomUUID(),
-          messageId: message.id,
-          content: message.content,
-          title,
-          savedAt: new Date().toISOString(),
-          sessionId: activeSessionId ?? undefined,
-          datasetName: activeSession?.dataset_name ?? undefined,
-        };
-
-        localStorage.setItem("savedReports", JSON.stringify([report, ...existing]));
-        toast.success("Report saved to library!", {
-          description: title,
-          action: { label: "View", onClick: () => { window.location.href = "/dashboard/report"; } },
-        });
-      } catch {
-        toast.error("Failed to save report.");
-      }
-    },
-    [activeSession?.dataset_name, activeSessionId]
-  );
-
-  const downloadPdf = useCallback((message: DashboardChatMessage) => {
-    const firstLine = message.content.split("\n").find((l) => l.trim().length > 0) ?? "";
-    const title = firstLine.replace(/^#+\s*/, "").slice(0, 60) || "Report";
-
-    const htmlContent = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>${title}</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; line-height: 1.7; color: #111; padding: 40px 56px; max-width: 860px; margin: 0 auto; }
-    h1, h2, h3, h4 { margin: 1.4em 0 0.5em; font-weight: 600; line-height: 1.3; }
-    h1 { font-size: 22px; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px; }
-    h2 { font-size: 17px; }
-    h3 { font-size: 14px; }
-    p { margin: 0.7em 0; }
-    ul, ol { margin: 0.7em 0 0.7em 1.5em; }
-    li { margin: 0.3em 0; }
-    code { background: #f3f4f6; border-radius: 3px; padding: 1px 5px; font-size: 12px; font-family: 'Courier New', monospace; }
-    pre { background: #f3f4f6; border-radius: 6px; padding: 12px 16px; overflow-x: auto; margin: 1em 0; }
-    pre code { background: none; padding: 0; }
-    strong, b { font-weight: 600; }
-    em, i { font-style: italic; }
-    blockquote { border-left: 3px solid #d1d5db; padding-left: 14px; color: #6b7280; margin: 1em 0; }
-    table { border-collapse: collapse; width: 100%; margin: 1em 0; font-size: 12px; }
-    th, td { border: 1px solid #e5e7eb; padding: 6px 10px; text-align: left; }
-    th { background: #f9fafb; font-weight: 600; }
-    hr { border: none; border-top: 1px solid #e5e7eb; margin: 1.5em 0; }
-    .meta { color: #6b7280; font-size: 11px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb; }
-    @media print { body { padding: 20px 30px; } }
-  </style>
-</head>
-<body>
-  <div class="meta">InsightForge · Generated ${new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</div>
-  <div id="content"></div>
-  <script>
-    const raw = ${JSON.stringify(message.content)};
-    // Very lightweight markdown → HTML (handles headings, bold, italic, code, lists, hr)
-    function mdToHtml(md) {
-      return md
-        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-        .replace(/^#{6}\\s+(.+)$/gm, '<h6>$1</h6>')
-        .replace(/^#{5}\\s+(.+)$/gm, '<h5>$1</h5>')
-        .replace(/^#{4}\\s+(.+)$/gm, '<h4>$1</h4>')
-        .replace(/^###\\s+(.+)$/gm, '<h3>$1</h3>')
-        .replace(/^##\\s+(.+)$/gm, '<h2>$1</h2>')
-        .replace(/^#\\s+(.+)$/gm, '<h1>$1</h1>')
-        .replace(/\\*\\*(.+?)\\*\\*/g, '<strong>$1</strong>')
-        .replace(/\\*(.+?)\\*/g, '<em>$1</em>')
-        .replace(/\`\`\`[\\s\\S]*?\`\`\`/g, (m) => '<pre><code>' + m.slice(3, -3).replace(/^[^\\n]*\\n/, '') + '</code></pre>')
-        .replace(/\`([^\`]+)\`/g, '<code>$1</code>')
-        .replace(/^---+$/gm, '<hr/>')
-        .replace(/^[\\*\\-]\\s+(.+)$/gm, '<li>$1</li>')
-        .replace(/(<li>.*<\\/li>)/s, '<ul>$1</ul>')
-        .replace(/^\\d+\\.\\s+(.+)$/gm, '<li>$1</li>')
-        .replace(/\\n\\n/g, '</p><p>')
-        .replace(/^(?!<[hup]|<li|<pre|<hr|<blockquote)(.+)$/gm, '<p>$1</p>')
-        .replace(/<p><\\/p>/g, '');
-    }
-    document.getElementById('content').innerHTML = mdToHtml(raw);
-    window.onload = () => { window.print(); };
-  </script>
-</body>
-</html>`;
-
-    const win = window.open("", "_blank", "width=900,height=700");
-    if (!win) {
-      toast.error("Pop-up blocked. Please allow pop-ups for this site.");
-      return;
-    }
-    win.document.write(htmlContent);
-    win.document.close();
-  }, []);
-
-  const downloadArtifact = useCallback(
-    async (artifact: DashboardArtifact) => {
-      if (!activeSessionId) return;
-      try {
-        const response = await fetch(
-          `/api/chat/sessions/${activeSessionId}/artifacts/${artifact.artifact_id}/download`,
-          {
-            method: "GET",
-            cache: "no-store",
-          }
-        );
-
-        if (!response.ok) {
-          const payload = (await response.json().catch(() => ({}))) as { error?: string };
-          throw new Error(payload.error || "Failed to download artifact.");
-        }
-
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const anchor = document.createElement("a");
-        anchor.href = url;
-        anchor.download = artifact.name || "corrected_dataset.csv";
-        document.body.appendChild(anchor);
-        anchor.click();
-        anchor.remove();
-        window.URL.revokeObjectURL(url);
-        toast.success("Corrected dataset downloaded.");
-      } catch (err) {
-        const message = err instanceof Error ? err.message : "Unable to download artifact.";
-        toast.error(message);
-      }
-    },
-    [activeSessionId]
-  );
-
   useEffect(() => {
     let cancelled = false;
 
@@ -643,21 +500,46 @@ export default function ChatWorkspace() {
     };
   }, [createSession, fetchSessionById, fetchSessions]);
 
+  function clearChatHistory() {
+    throw new Error("Function not implemented.");
+  }
+
+  function saveReport(message: DashboardChatMessage): void {
+    throw new Error("Function not implemented.");
+  }
+
+  function downloadPdf(message: DashboardChatMessage): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <div className="grid h-full min-h-0 flex-1 gap-4 px-4 lg:grid-cols-[300px_minmax(0,1fr)] lg:px-6">
       {/* ── Chat History Sidebar ── */}
-      <aside className="flex h-full min-h-0 flex-col rounded-2xl border border-white/10 bg-black/30 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+      <aside className="flex h-full min-h-0 flex-col rounded-2xl border border-[var(--chat-border)] bg-[var(--chat-surface)] p-3 shadow-[inset_0_1px_0_var(--chat-border-soft)]">
         <div className="mb-3 flex items-center justify-between px-1">
-          <h2 className="text-sm font-semibold tracking-tight text-white/80">Chat History</h2>
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-8 gap-1.5 border-white/12 bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
-            onClick={() => void handleNewChat()}
-          >
-            <PlusIcon className="size-3.5" />
-            New
-          </Button>
+          <h2 className="text-sm font-semibold tracking-tight text-[var(--chat-text)]">Chat History</h2>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 gap-1.5 border-[var(--chat-border)] bg-[var(--chat-surface-elev)] text-[var(--chat-text-soft)] hover:bg-[var(--chat-surface-elev)] hover:text-[var(--chat-text)]"
+              onClick={() => void clearChatHistory()}
+              disabled={isBooting || isClearing || sessions.length === 0}
+            >
+              <Trash2Icon className="size-3.5" />
+              {isClearing ? "Clearing..." : "Clear"}
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 gap-1.5 border-[var(--chat-border)] bg-[var(--chat-surface-elev)] text-[var(--chat-text-soft)] hover:bg-[var(--chat-surface-elev)] hover:text-[var(--chat-text)]"
+              onClick={() => void handleNewChat()}
+              disabled={isBooting || isClearing}
+            >
+              <PlusIcon className="size-3.5" />
+              New
+            </Button>
+          </div>
         </div>
 
         <div className="flex-1 space-y-1 overflow-y-auto pr-0.5">
@@ -667,44 +549,28 @@ export default function ChatWorkspace() {
               className={cn(
                 "flex w-full items-start gap-2 rounded-xl border px-2 py-2 transition-colors",
                 activeSessionId === chat.session_id
-                  ? "border-white/14 bg-white/8"
-                  : "border-transparent hover:border-white/10 hover:bg-white/5"
+                  ? "border-[var(--chat-border)] bg-[var(--chat-surface-elev)]"
+                  : "border-transparent hover:border-[var(--chat-border)] hover:bg-[var(--chat-surface-elev)]"
               )}
             >
-              <button
-                type="button"
-                onClick={() => void openSession(chat.session_id)}
-                className="flex min-w-0 flex-1 cursor-pointer items-start gap-2.5 text-left"
-              >
-                <MessageSquareMoreIcon className="mt-0.5 size-4 shrink-0 text-white/40" />
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-medium text-white/85">
-                    {chat.title || "New chat"}
-                  </span>
-                  <span className="block truncate text-xs text-white/40">
-                    {chat.dataset_name ? `📊 ${chat.dataset_name}` : chat.preview || "No messages yet"}
-                  </span>
+              <MessageSquareMoreIcon className="mt-0.5 size-4 shrink-0 text-[var(--chat-text-muted)]" />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-medium text-[var(--chat-text)]">
+                  {chat.title || "New chat"}
                 </span>
-                <span className="shrink-0 text-[10px] text-white/35">
-                  {formatRelativeTime(chat.updated_at)}
+                <span className="block truncate text-xs text-[var(--chat-text-muted)]">
+                  {chat.dataset_name ? `📊 ${chat.dataset_name}` : chat.preview || "No messages yet"}
                 </span>
-              </button>
-
-              <button
-                type="button"
-                aria-label="Delete chat"
-                title="Delete chat"
-                onClick={() => void handleDeleteChat(chat.session_id)}
-                className="mt-0.5 shrink-0 rounded-md p-1 text-white/35 transition-colors hover:bg-white/10 hover:text-red-300"
-              >
-                <Trash2Icon className="size-3.5" />
-              </button>
-            </div>
+              </span>
+              <span className="shrink-0 text-[10px] text-[var(--chat-text-muted)]">
+                {formatRelativeTime(chat.updated_at)}
+              </span>
+            </button>
           ))}
 
           {sessions.length === 0 && (
-            <div className="rounded-xl border border-dashed border-white/10 px-3 py-3 text-xs text-white/35">
-              No chats yet. Click <span className="font-medium text-white/60">+ New</span> to start.
+            <div className="rounded-xl border border-dashed border-[var(--chat-border)] px-3 py-3 text-xs text-[var(--chat-text-muted)]">
+              No chats yet. Click <span className="font-medium text-[var(--chat-text)]">+ New</span> to start.
             </div>
           )}
         </div>

@@ -7,25 +7,26 @@ const footerLinks = {
   Pages: [
     { label: 'Features',     href: '#features' },
     { label: 'How it Works', href: '#about' },
-    { label: 'Pricing',      href: '#' },
-    { label: 'Blog',         href: '#' },
+    { label: 'Dashboard',    href: '/dashboard' },
+    { label: 'Contact',      href: '#contact' },
   ],
   Socials: [
-    { label: 'Twitter',  href: '#' },
-    { label: 'LinkedIn', href: '#' },
     { label: 'GitHub',   href: '#' },
-    { label: 'Facebook', href: '#' },
+    { label: 'LinkedIn', href: '#' },
+    { label: 'Instagram', href: '#' },
+    { label: 'Email',    href: '#contact' },
   ],
-  Legal: [
-    { label: 'Privacy Policy',   href: '#' },
-    { label: 'Terms of Service', href: '#' },
-    { label: 'Cookie Policy',    href: '#' },
+  Project: [
+    { label: 'Problem',         href: '#about' },
+    { label: 'Solution',        href: '#features' },
+    { label: 'Live Demo',       href: '/dashboard' },
+    { label: 'Key Highlights',  href: '#about' },
   ],
   Company: [
-    { label: 'About Us',   href: '#about' },
-    { label: 'Careers',    href: '#' },
-    { label: 'Contact Us', href: '#contact' },
-    { label: 'API Docs',   href: '#' },
+    { label: 'About Team',       href: '#about' },
+    { label: 'Hackathon Build',  href: '#' },
+    { label: 'Built in 2026',    href: '#' },
+    { label: 'Get in Touch',     href: '#contact' },
   ],
 };
 
@@ -51,7 +52,7 @@ export default function Footer() {
               </span>
             </Link>
             <p style={{ color: 'var(--text-secondary)', fontSize: '12.5px', lineHeight: 1.75, maxWidth: '210px' }}>
-              © copyright InsightForge {new Date().getFullYear()}.<br />All rights reserved.
+              Built for MEGAHACK 2026 by Team InsightForge.<br />Project showcase build.
             </p>
           </div>
 
@@ -116,6 +117,19 @@ export default function Footer() {
           color: transparent;
           animation: gradient-sweep 6s ease-in-out infinite;
           opacity: 0.35;
+        }
+
+        html[data-theme='light'] .footer-watermark {
+          background-image: linear-gradient(
+            to right,
+            #000000 0%, #000000 40%, #ffffff 50%, #000000 60%, #000000 100%
+          );
+          background-size: 260% 100%;
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          color: transparent;
+          opacity: 0.95;
         }
 
         @media (max-width: 900px) { .footer-grid { grid-template-columns: 1fr 1fr 1fr !important; } }
