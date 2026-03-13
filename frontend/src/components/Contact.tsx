@@ -9,7 +9,7 @@ import { gsap } from 'gsap';
 const contactInfo = [
   { icon: Mail,   label: 'Email',    value: 'hello@insightforge.ai', href: 'mailto:hello@insightforge.ai' },
   { icon: Phone,  label: 'Phone',    value: '+1 (800) INSIGHT',      href: 'tel:+18004676744' },
-  { icon: MapPin, label: 'Location', value: 'San Francisco, CA',     href: '#' },
+  { icon: MapPin, label: 'Location', value: 'Mumbai, India',         href: '#' },
 ];
 
 /* ─── particle helpers ─── */
@@ -210,8 +210,8 @@ export default function Contact() {
             <AnimatedCard style={{ padding: '24px' }}>
               <h4 style={{ fontFamily: 'Outfit,sans-serif', fontSize: '14px', fontWeight: 700, marginBottom: '14px' }}>Support Hours</h4>
               {[
-                { day: 'Mon – Fri', hours: '9 AM – 6 PM PST' },
-                { day: 'Saturday',  hours: '10 AM – 4 PM PST' },
+                { day: 'Mon – Fri', hours: '9 AM – 6 PM IST' },
+                { day: 'Saturday',  hours: '10 AM – 4 PM IST' },
                 { day: 'Sunday',    hours: 'Closed' },
               ].map(({ day, hours }) => (
                 <div key={day} style={{ display: 'flex', justifyContent: 'space-between', padding: '9px 0', borderBottom: '1px solid var(--border)', fontSize: '13px' }}>
