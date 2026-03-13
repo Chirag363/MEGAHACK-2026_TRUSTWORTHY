@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { ClerkProvider } from '@clerk/nextjs';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { ThemeProvider } from '@/components/theme-provider';
+import ThemeToggle from '@/components/theme-toggle';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -17,14 +19,19 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="dark" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body>
         <ClerkProvider>
-          <TooltipProvider>{children}</TooltipProvider>
+          <ThemeProvider>
+            <TooltipProvider>
+              {children}
+              <ThemeToggle />
+            </TooltipProvider>
+          </ThemeProvider>
         </ClerkProvider>
       </body>
     </html>
