@@ -26,7 +26,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     [user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.username || 'User';
 
   return (
-    <SidebarProvider style={sidebarStyles}>
+    <SidebarProvider className="h-svh overflow-hidden" style={sidebarStyles}>
       <AppSidebar
         user={{
           name: displayName,
@@ -35,10 +35,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
         }}
         variant="inset"
       />
-      <SidebarInset>
+      <SidebarInset className="min-h-0">
         <SiteHeader />
-        <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-4 py-4 md:gap-6 md:py-6">{children}</div>
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          <div className="@container/main flex min-h-0 flex-1 flex-col gap-4 overflow-auto py-4 md:gap-6 md:py-6">
+            {children}
+          </div>
         </div>
       </SidebarInset>
     </SidebarProvider>
