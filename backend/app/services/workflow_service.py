@@ -119,10 +119,13 @@ class WorkflowService:
         llm,
         tools,
         dry_run: bool,
+        on_agent_event: Callable[[str, str], None] | None = None,
     ) -> Callable[[WorkflowState], WorkflowState]:
         def node(state: WorkflowState) -> WorkflowState:
             run_id = str(state.get("metadata", {}).get("run_id", "n/a"))
             logger.info("[run:%s] agent start: %s", run_id, agent.name)
+            if on_agent_event:
+                on_agent_event("agent_start", agent.name)
 
             prior_outputs = "\n\n".join(
                 f"{name}:\n{output}" for name, output in state["agent_outputs"].items()
@@ -163,6 +166,8 @@ class WorkflowService:
             if agent.name not in completed:
                 completed.append(agent.name)
 
+            if on_agent_event:
+                on_agent_event("agent_done", agent.name)
             logger.info("[run:%s] agent complete: %s output_chars=%s", run_id, agent.name, len(content))
             return {
                 **state,
@@ -240,6 +245,7 @@ class WorkflowService:
         worker_agents: dict[str, AgentConfig],
         llm,
         dry_run: bool,
+        on_token: Callable[[str], None] | None = None,
     ) -> Callable[[WorkflowState], WorkflowState]:
         worker_names = list(worker_agents.keys())
 
@@ -325,8 +331,9 @@ class WorkflowService:
                     }
 
                     if casual_output and not non_casual_outputs:
-                        # Casual conversation path — surface the agent's reply directly,
-                        # no structured business report needed.
+                        # Casual conversation path — surface the agent's reply directly.
+                        if on_token:
+                            on_token(casual_output)
                         final_report = casual_output
                     else:
                         final_prompt = (
@@ -336,13 +343,28 @@ class WorkflowService:
                             f"Worker outputs:\n{output_snapshot}\n\n"
                             "Return a clear report with sections: Executive Summary, Key Findings, Risks, and Recommendations."
                         )
-                        final_response = llm.invoke(
-                            [
-                                SystemMessage(content=f"You are {supervisor.role}."),
-                                HumanMessage(content=final_prompt),
-                            ]
-                        )
-                        final_report = WorkflowService._extract_text(final_response.content)
+                        if on_token:
+                            # Stream the final report token-by-token.
+                            chunks: list[str] = []
+                            for chunk in llm.stream(
+                                [
+                                    SystemMessage(content=f"You are {supervisor.role}."),
+                                    HumanMessage(content=final_prompt),
+                                ]
+                            ):
+                                text = WorkflowService._extract_text(chunk.content)
+                                if text:
+                                    on_token(text)
+                                    chunks.append(text)
+                            final_report = "".join(chunks)
+                        else:
+                            final_response = llm.invoke(
+                                [
+                                    SystemMessage(content=f"You are {supervisor.role}."),
+                                    HumanMessage(content=final_prompt),
+                                ]
+                            )
+                            final_report = WorkflowService._extract_text(final_response.content)
 
                 logger.info("[run:%s] supervisor finalized report", run_id)
                 conversation.append(
@@ -383,7 +405,15 @@ class WorkflowService:
         return node
 
     @classmethod
-    def build_graph(cls, config: AppConfig, llm, dry_run: bool = False, tools=None):
+    def build_graph(
+        cls,
+        config: AppConfig,
+        llm,
+        dry_run: bool = False,
+        tools=None,
+        on_token: Callable[[str], None] | None = None,
+        on_agent_event: Callable[[str, str], None] | None = None,
+    ):
         graph = StateGraph(WorkflowState)
         enabled_agents: Dict[str, AgentConfig] = {
             agent.name: agent for agent in config.agents if agent.enabled
@@ -402,11 +432,21 @@ class WorkflowService:
                     worker_agents=worker_agents,
                     llm=llm,
                     dry_run=dry_run,
+                    on_token=on_token,
                 ),
             )
 
             for worker_name, worker in worker_agents.items():
-                graph.add_node(worker_name, cls._build_worker_node(agent=worker, llm=llm, tools=tools, dry_run=dry_run))
+                graph.add_node(
+                    worker_name,
+                    cls._build_worker_node(
+                        agent=worker,
+                        llm=llm,
+                        tools=tools,
+                        dry_run=dry_run,
+                        on_agent_event=on_agent_event,
+                    ),
+                )
 
             graph.add_edge(START, supervisor.name)
 
@@ -427,7 +467,16 @@ class WorkflowService:
         nodes = enabled_agents
         logger.info("workflow mode=sequential nodes=%s", list(nodes.keys()))
         for agent_name, agent in nodes.items():
-            graph.add_node(agent_name, cls._build_worker_node(agent=agent, llm=llm, tools=tools, dry_run=dry_run))
+            graph.add_node(
+                agent_name,
+                cls._build_worker_node(
+                    agent=agent,
+                    llm=llm,
+                    tools=tools,
+                    dry_run=dry_run,
+                    on_agent_event=on_agent_event,
+                ),
+            )
 
         graph.add_edge(START, config.workflow.start)
         for from_node, to_node in config.workflow.edges:
