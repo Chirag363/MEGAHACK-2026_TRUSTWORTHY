@@ -16,7 +16,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { cn } from "@/lib/utils"
-import { CommandIcon, MessageSquareTextIcon, BarChart3Icon, SparklesIcon, MessagesSquareIcon, DatabaseIcon, BrainCircuitIcon, LineChartIcon, LightbulbIcon, ClipboardListIcon } from "lucide-react"
+import { CommandIcon, MessageSquareTextIcon, BarChart3Icon, MessagesSquareIcon, DatabaseIcon, BrainCircuitIcon, LineChartIcon, LightbulbIcon, ClipboardListIcon, ArrowLeftIcon } from "lucide-react"
 
 const navItems = [
   {
@@ -101,7 +101,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
               size="lg"
               className="h-auto cursor-pointer rounded-xl px-3 py-2.5 hover:bg-white/5"
             >
-              <Link href="/dashboard/chat" className="flex items-center gap-3">
+              <Link href="/dashboard" className="flex items-center gap-3">
                 {/* Icon with glow ring */}
                 <div className="relative flex size-8 shrink-0 items-center justify-center">
                   <div className="absolute inset-0 rounded-lg bg-cyan-400/20 blur-[6px]" />
@@ -113,10 +113,6 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
                   <span className="text-[15px] font-semibold tracking-tight text-white">
                     InsightForge
                   </span>
-                  <span className="flex items-center gap-1 text-[10px] text-white/35">
-                    <SparklesIcon className="size-2.5" />
-                    AI Analytics
-                  </span>
                 </div>
               </Link>
             </SidebarMenuButton>
@@ -125,6 +121,14 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
 
         {/* Separator with gradient */}
         <div className="mt-2 h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent" />
+
+        <Link
+          href="/"
+          className="mt-3 inline-flex items-center gap-2 rounded-lg border border-white/12 bg-white/[0.03] px-3 py-2 text-xs text-white/70 transition hover:bg-white/[0.08] hover:text-white"
+        >
+          <ArrowLeftIcon className="size-3.5" />
+          Back to Landing Page
+        </Link>
       </SidebarHeader>
 
       {/* ── Nav ── */}
