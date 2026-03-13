@@ -2,7 +2,7 @@
 
 import { motion, useInView } from 'framer-motion';
 import { useRef, useEffect, useCallback, useState } from 'react';
-import { Send, MessageSquare } from 'lucide-react';
+import { Send, MessageSquare, Mail, MapPin, Phone } from 'lucide-react';
 import { gsap } from 'gsap';
 
 /* ─── contact info data ─── */

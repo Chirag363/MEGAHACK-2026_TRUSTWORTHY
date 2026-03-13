@@ -446,6 +446,18 @@ export default function ChatWorkspace() {
     };
   }, [createSession, fetchSessionById, fetchSessions]);
 
+  function clearChatHistory() {
+    throw new Error("Function not implemented.");
+  }
+
+  function saveReport(message: DashboardChatMessage): void {
+    throw new Error("Function not implemented.");
+  }
+
+  function downloadPdf(message: DashboardChatMessage): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <div className="grid h-full min-h-0 flex-1 gap-4 px-4 lg:grid-cols-[300px_minmax(0,1fr)] lg:px-6">
       {/* ── Chat History Sidebar ── */}
