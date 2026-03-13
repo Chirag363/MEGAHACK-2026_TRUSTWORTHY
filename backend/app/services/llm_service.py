@@ -18,19 +18,6 @@ class LLMService:
         model = os.getenv("MODEL_NAME", model_name)
         temp = float(os.getenv("MODEL_TEMPERATURE", temperature))
 
-        if provider in {"zai", "z.ai"}:
-            api_key = os.getenv("ZAI_API_KEY")
-            if not api_key:
-                raise ValueError("ZAI_API_KEY is required when MODEL_PROVIDER is zai.")
-
-            api_base = os.getenv("ZAI_API_BASE", "https://api.z.ai/api/paas/v4/")
-            logger.info("LLMService using Z.AI base=%s model=%s", api_base, model)
-            return ChatOpenAI(
-                temperature=temp,
-                model=model,
-                openai_api_key=api_key,
-                openai_api_base=api_base,
-            )
 
         if provider in {"gradient", "digitalocean", "do"}:
             # DigitalOcean Serverless Inference is OpenAI-compatible.
