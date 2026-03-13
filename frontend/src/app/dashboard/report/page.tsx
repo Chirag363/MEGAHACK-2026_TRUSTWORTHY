@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { BookmarkCheckIcon, DatabaseIcon, DownloadIcon, FileTextIcon, SearchIcon, TrashIcon } from "lucide-react";
+import { jsPDF } from "jspdf";
 import { MessageResponse } from "@/components/ai-elements/message";
-import { cn } from "@/lib/utils";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 
 type SavedReport = {
@@ -31,9 +32,49 @@ function getPreview(content: string, maxChars = 180) {
   return stripped.length > maxChars ? stripped.slice(0, maxChars) + "…" : stripped;
 }
 
+function sanitizeForPdf(text: string) {
+  return text
+    .normalize("NFKD")
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201C\u201D]/g, '"')
+    .replace(/[\u2013\u2014]/g, "-")
+    .replace(/\u2026/g, "...")
+    .replace(/\u00A0/g, " ")
+    .replace(/[^\x09\x0A\x0D\x20-\x7E]/g, "");
+}
+
+function isTableDivider(line: string) {
+  const trimmed = line.replace(/\|/g, "").trim();
+  return /^:?-{3,}:?$/.test(trimmed) || /^-+$/.test(trimmed);
+}
+
+function stripInlineMarkdown(text: string) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/\*(.*?)\*/g, "$1")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/^>\s?/, "")
+    .trim();
+}
+
+function parseTableRow(line: string) {
+  return line
+    .split("|")
+    .map((cell) => stripInlineMarkdown(cell.trim()))
+    .filter(Boolean);
+}
+
+function toSafeFilename(title: string) {
+  const clean = title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return clean || "report";
+}
+
 export default function DashboardReportPage() {
   const [reports, setReports] = useState<SavedReport[]>([]);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
 
   useEffect(() => {
@@ -49,65 +90,222 @@ export default function DashboardReportPage() {
     const next = reports.filter((r) => r.id !== id);
     setReports(next);
     localStorage.setItem("savedReports", JSON.stringify(next));
-    if (expandedId === id) setExpandedId(null);
+    if (selectedReportId === id) setSelectedReportId(null);
     toast.success("Report removed from library.");
   };
 
+  const selectedReport = reports.find((report) => report.id === selectedReportId) ?? null;
+
   const downloadPdf = (report: SavedReport) => {
-    const htmlContent = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>${report.title}</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; line-height: 1.7; color: #111; padding: 40px 56px; max-width: 860px; margin: 0 auto; }
-    h1, h2, h3, h4 { margin: 1.4em 0 0.5em; font-weight: 600; line-height: 1.3; }
-    h1 { font-size: 22px; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px; }
-    h2 { font-size: 17px; } h3 { font-size: 14px; }
-    p { margin: 0.7em 0; }
-    ul, ol { margin: 0.7em 0 0.7em 1.5em; } li { margin: 0.3em 0; }
-    code { background: #f3f4f6; border-radius: 3px; padding: 1px 5px; font-size: 12px; font-family: 'Courier New', monospace; }
-    pre { background: #f3f4f6; border-radius: 6px; padding: 12px 16px; overflow-x: auto; margin: 1em 0; }
-    pre code { background: none; padding: 0; }
-    strong, b { font-weight: 600; } em, i { font-style: italic; }
-    blockquote { border-left: 3px solid #d1d5db; padding-left: 14px; color: #6b7280; margin: 1em 0; }
-    table { border-collapse: collapse; width: 100%; margin: 1em 0; font-size: 12px; }
-    th, td { border: 1px solid #e5e7eb; padding: 6px 10px; text-align: left; }
-    th { background: #f9fafb; font-weight: 600; }
-    hr { border: none; border-top: 1px solid #e5e7eb; margin: 1.5em 0; }
-    .meta { color: #6b7280; font-size: 11px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb; }
-    @media print { body { padding: 20px 30px; } }
-  </style>
-</head>
-<body>
-  <div class="meta">InsightForge · Saved ${formatDate(report.savedAt)}${report.datasetName ? ` · ${report.datasetName}` : ""}</div>
-  <div id="content"></div>
-  <script>
-    const raw = ${JSON.stringify(report.content)};
-    function mdToHtml(md) {
-      return md
-        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-        .replace(/^#{6}\\s+(.+)$/gm,'<h6>$1</h6>').replace(/^#{5}\\s+(.+)$/gm,'<h5>$1</h5>')
-        .replace(/^#{4}\\s+(.+)$/gm,'<h4>$1</h4>').replace(/^###\\s+(.+)$/gm,'<h3>$1</h3>')
-        .replace(/^##\\s+(.+)$/gm,'<h2>$1</h2>').replace(/^#\\s+(.+)$/gm,'<h1>$1</h1>')
-        .replace(/\\*\\*(.+?)\\*\\*/g,'<strong>$1</strong>').replace(/\\*(.+?)\\*/g,'<em>$1</em>')
-        .replace(/\`([^\`]+)\`/g,'<code>$1</code>')
-        .replace(/^---+$/gm,'<hr/>')
-        .replace(/^[\\*\\-]\\s+(.+)$/gm,'<li>$1</li>')
-        .replace(/^\\d+\\.\\s+(.+)$/gm,'<li>$1</li>')
-        .replace(/\\n\\n/g,'</p><p>')
-        .replace(/<p><\\/p>/g,'');
+    try {
+      const doc = new jsPDF({ unit: "pt", format: "a4" });
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const marginX = 44;
+      const marginTop = 52;
+      const lineHeight = 14;
+      const maxWidth = pageWidth - marginX * 2;
+      let cursorY = marginTop;
+
+      const ensureSpace = (heightNeeded: number) => {
+        if (cursorY + heightNeeded > pageHeight - 44) {
+          doc.addPage();
+          cursorY = marginTop;
+        }
+      };
+
+      const drawWrapped = (text: string, x: number, width: number, lh: number) => {
+        const lines = doc.splitTextToSize(text, width) as string[];
+        for (const line of lines) {
+          ensureSpace(lh);
+          doc.text(line, x, cursorY);
+          cursorY += lh;
+        }
+      };
+
+      doc.setFont("times", "bold");
+      doc.setFontSize(15);
+      const safeTitle = sanitizeForPdf(report.title);
+      const titleLines = doc.splitTextToSize(safeTitle, maxWidth) as string[];
+      doc.text(titleLines, marginX, cursorY);
+      cursorY += titleLines.length * 18;
+
+      doc.setFont("times", "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(110, 110, 110);
+      const meta = sanitizeForPdf(
+        `Saved ${formatDate(report.savedAt)}${report.datasetName ? ` | ${report.datasetName}` : ""}`
+      );
+      doc.text(meta, marginX, cursorY);
+      cursorY += 16;
+
+      doc.setDrawColor(220, 220, 220);
+      doc.line(marginX, cursorY, pageWidth - marginX, cursorY);
+      cursorY += 20;
+
+      doc.setTextColor(20, 20, 20);
+      doc.setFont("times", "normal");
+      doc.setFontSize(10);
+
+      const content = sanitizeForPdf(report.content);
+      const rawLines = content.split("\n");
+
+      for (let i = 0; i < rawLines.length; i += 1) {
+        const rawLine = rawLines[i];
+        const line = rawLine.trim();
+
+        if (!line) {
+          cursorY += 6;
+          continue;
+        }
+
+        if (/^---+$/.test(line)) {
+          ensureSpace(12);
+          doc.setDrawColor(220, 220, 220);
+          doc.line(marginX, cursorY, pageWidth - marginX, cursorY);
+          cursorY += 12;
+          continue;
+        }
+
+        const hMatch = line.match(/^(#{1,4})\s+(.+)$/);
+        if (hMatch) {
+          const level = hMatch[1].length;
+          const heading = hMatch[2];
+          const size = level === 1 ? 14 : level === 2 ? 12 : 11;
+          const spacingBefore = level <= 2 ? 8 : 6;
+          cursorY += spacingBefore;
+          doc.setFont("times", "bold");
+          doc.setFontSize(size);
+          drawWrapped(heading, marginX, maxWidth, 15);
+          doc.setFont("times", "normal");
+          doc.setFontSize(10);
+          cursorY += 2;
+          continue;
+        }
+
+        if (/^\d+\s+/.test(line)) {
+          doc.setFont("times", "bold");
+          doc.setFontSize(12);
+          drawWrapped(line, marginX, maxWidth, 15);
+          doc.setFont("times", "normal");
+          doc.setFontSize(10);
+          cursorY += 2;
+          continue;
+        }
+
+        const nextLine = rawLines[i + 1]?.trim() ?? "";
+        if (line.includes("|") && isTableDivider(nextLine)) {
+          const tableLines: string[] = [];
+          tableLines.push(line);
+          i += 1;
+
+          while (i + 1 < rawLines.length) {
+            const probe = rawLines[i + 1].trim();
+            if (!probe || !probe.includes("|")) {
+              break;
+            }
+            tableLines.push(probe);
+            i += 1;
+          }
+
+          const headers = parseTableRow(tableLines[0]);
+          const rows = tableLines.slice(1).map(parseTableRow).filter((row) => row.length > 0);
+          const colCount = Math.max(headers.length, ...rows.map((row) => row.length));
+
+          if (colCount > 0) {
+            const gap = 8;
+            const colWidth = (maxWidth - gap * (colCount - 1)) / colCount;
+            const rowPaddingY = 6;
+
+            const drawTableRow = (
+              cells: string[],
+              options: { header?: boolean; borderTop?: boolean; borderBottom?: boolean } = {}
+            ) => {
+              const cellLines = Array.from({ length: colCount }, (_, colIdx) => {
+                const value = stripInlineMarkdown(cells[colIdx] ?? "");
+                doc.setFont("times", options.header ? "bold" : "normal");
+                doc.setFontSize(options.header ? 10 : 9.5);
+                return doc.splitTextToSize(value || "-", colWidth - 6) as string[];
+              });
+
+              const maxLines = Math.max(1, ...cellLines.map((entry) => entry.length));
+              const rowHeight = maxLines * 12 + rowPaddingY * 2;
+              ensureSpace(rowHeight + 2);
+
+              if (options.header) {
+                doc.setFillColor(245, 245, 245);
+                doc.rect(marginX, cursorY, maxWidth, rowHeight, "F");
+              }
+
+              if (options.borderTop) {
+                doc.setDrawColor(180, 180, 180);
+                doc.setLineWidth(0.8);
+                doc.line(marginX, cursorY, marginX + maxWidth, cursorY);
+              }
+
+              for (let colIdx = 0; colIdx < colCount; colIdx += 1) {
+                const x = marginX + colIdx * (colWidth + gap);
+                const y = cursorY + rowPaddingY + 10;
+
+                doc.setTextColor(20, 20, 20);
+                doc.setFont("times", options.header ? "bold" : "normal");
+                doc.setFontSize(options.header ? 10 : 9.5);
+                doc.text(cellLines[colIdx], x + 3, y);
+
+                if (colIdx < colCount - 1) {
+                  const dividerX = x + colWidth + gap / 2;
+                  doc.setDrawColor(210, 210, 210);
+                  doc.setLineWidth(0.4);
+                  doc.line(dividerX, cursorY, dividerX, cursorY + rowHeight);
+                }
+              }
+
+              if (options.borderBottom) {
+                doc.setDrawColor(180, 180, 180);
+                doc.setLineWidth(0.8);
+                doc.line(marginX, cursorY + rowHeight, marginX + maxWidth, cursorY + rowHeight);
+              }
+
+              cursorY += rowHeight;
+            };
+
+            drawTableRow(headers, { header: true, borderTop: true });
+            rows.forEach((row, rowIdx) => {
+              drawTableRow(row, { borderBottom: rowIdx === rows.length - 1 });
+            });
+            cursorY += 8;
+          }
+          continue;
+        }
+
+        if (line.includes("|") && !isTableDivider(line)) {
+          const inlineCells = parseTableRow(line);
+          if (inlineCells.length > 0) {
+            const rowText = inlineCells.join("   |   ");
+            doc.setFont("courier", "normal");
+            doc.setFontSize(9);
+            drawWrapped(rowText, marginX, maxWidth, 12);
+            doc.setFont("times", "normal");
+            doc.setFontSize(10);
+          }
+          continue;
+        }
+
+        if (/^[-*]\s+/.test(line)) {
+          const bulletText = line.replace(/^[-*]\s+/, "");
+          doc.text("-", marginX, cursorY);
+          drawWrapped(bulletText, marginX + 12, maxWidth - 12, lineHeight);
+          continue;
+        }
+
+        drawWrapped(stripInlineMarkdown(line), marginX, maxWidth, lineHeight);
+      }
+
+      doc.save(`${toSafeFilename(report.title)}.pdf`);
+      toast.success("PDF downloaded.");
+    } catch {
+      toast.error("Could not generate PDF. Please try again.");
     }
-    document.getElementById('content').innerHTML = mdToHtml(raw);
-    window.onload = () => { window.print(); };
-  </script>
-</body>
-</html>`;
-    const win = window.open("", "_blank", "width=900,height=700");
-    if (!win) { toast.error("Pop-up blocked. Please allow pop-ups."); return; }
-    win.document.write(htmlContent);
-    win.document.close();
   };
 
   const filtered = reports.filter(
@@ -162,14 +360,10 @@ export default function DashboardReportPage() {
           {/* Reports grid */}
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {filtered.map((report) => {
-              const isExpanded = expandedId === report.id;
               return (
                 <div
                   key={report.id}
-                  className={cn(
-                    "flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] transition-all",
-                    isExpanded && "sm:col-span-2 xl:col-span-3"
-                  )}
+                  className="flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] transition-all"
                 >
                   {/* Card header */}
                   <div className="flex items-start gap-3 px-4 pt-4 pb-3">
@@ -190,29 +384,21 @@ export default function DashboardReportPage() {
                     </div>
                   )}
 
-                  {/* Preview / full content */}
+                  {/* Preview */}
                   <div className="px-4 pb-3">
-                    {isExpanded ? (
-                      <div className="prose prose-sm prose-invert max-w-none rounded-xl border border-white/8 bg-black/20 p-4 text-xs leading-relaxed text-white/70">
-                        <MessageResponse isAnimating={false}>
-                          {report.content}
-                        </MessageResponse>
-                      </div>
-                    ) : (
-                      <p className="text-xs leading-relaxed text-white/45">
-                        {getPreview(report.content)}
-                      </p>
-                    )}
+                    <p className="text-xs leading-relaxed text-white/45">
+                      {getPreview(report.content)}
+                    </p>
                   </div>
 
                   {/* Actions */}
                   <div className="flex items-center gap-1.5 border-t border-white/8 px-4 py-2.5">
                     <button
                       type="button"
-                      onClick={() => setExpandedId(isExpanded ? null : report.id)}
+                      onClick={() => setSelectedReportId(report.id)}
                       className="flex-1 rounded-lg border border-white/10 bg-white/4 px-3 py-1.5 text-[11px] font-medium text-white/55 transition-all hover:border-white/20 hover:bg-white/8 hover:text-white/80"
                     >
-                      {isExpanded ? "Collapse" : "View Full Report"}
+                      View Report
                     </button>
                     <button
                       type="button"
@@ -235,6 +421,47 @@ export default function DashboardReportPage() {
               );
             })}
           </div>
+
+          <Dialog open={Boolean(selectedReport)} onOpenChange={(open) => !open && setSelectedReportId(null)}>
+            <DialogContent className="flex h-[90vh] w-[98vw] max-w-[96vw] flex-col gap-0 overflow-hidden border-white/10 bg-[#090b10] p-0 text-white sm:h-[88vh] sm:w-[96vw] sm:max-w-[96vw]" showCloseButton={true}>
+              {selectedReport && (
+                <>
+                  <DialogHeader className="border-b border-white/10 px-5 py-4">
+                    <DialogTitle className="truncate pr-10 text-white/90">{selectedReport.title}</DialogTitle>
+                    <DialogDescription className="text-xs text-white/45">
+                      Saved {formatDate(selectedReport.savedAt)}
+                      {selectedReport.datasetName ? ` · ${selectedReport.datasetName}` : ""}
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+                    <div className="prose prose-sm prose-invert max-w-none rounded-xl border border-white/8 bg-black/20 p-4 text-xs leading-relaxed text-white/70">
+                      <MessageResponse isAnimating={false}>{selectedReport.content}</MessageResponse>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-2 border-t border-white/10 px-5 py-3">
+                    <button
+                      type="button"
+                      onClick={() => downloadPdf(selectedReport)}
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/70 transition-all hover:border-white/20 hover:bg-white/10 hover:text-white"
+                    >
+                      <DownloadIcon className="size-3.5" />
+                      Download
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => deleteReport(selectedReport.id)}
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-1.5 text-xs text-red-300/90 transition-all hover:border-red-400/40 hover:bg-red-500/15"
+                    >
+                      <TrashIcon className="size-3.5" />
+                      Delete
+                    </button>
+                  </div>
+                </>
+              )}
+            </DialogContent>
+          </Dialog>
         </>
       )}
     </div>

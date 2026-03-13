@@ -24,7 +24,7 @@ class WorkflowConfig(BaseModel):
 class RuntimeConfig(BaseModel):
     model_provider: str = "gradient"
     model_name: str = "openai-gpt-oss-120b"
-    temperature: float = 0.6
+    temperature: float = 0.3
 
 
 class AppConfig(BaseModel):

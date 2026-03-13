@@ -16,6 +16,20 @@ logger = logging.getLogger(__name__)
 
 class WorkflowService:
     @staticmethod
+    def _wants_report_format(goal: str) -> bool:
+        text = (goal or "").lower()
+        report_hints = [
+            "report",
+            "business intelligence report",
+            "executive summary",
+            "detailed analysis",
+            "full analysis",
+            "comprehensive",
+            "appendix",
+        ]
+        return any(hint in text for hint in report_hints)
+
+    @staticmethod
     def _extract_text(content: Any) -> str:
         if isinstance(content, str):
             return content
@@ -336,12 +350,24 @@ class WorkflowService:
                             on_token(casual_output)
                         final_report = casual_output
                     else:
+                        wants_report = WorkflowService._wants_report_format(state["goal"])
+                        if wants_report:
+                            format_instruction = (
+                                "Return a clear report with sections: Executive Summary, Key Findings, Risks, and Recommendations."
+                            )
+                        else:
+                            format_instruction = (
+                                "Return a concise direct answer to the user's exact question. "
+                                "Do not force a business-report format. "
+                                "Use short plain language and at most 4 bullets when helpful."
+                            )
+
                         final_prompt = (
-                            f"You are {supervisor.role}. Generate the final business intelligence report.\n"
+                            f"You are {supervisor.role}.\n"
                             f"Business goal:\n{state['goal']}\n\n"
                             f"Dataset context:\n{state['dataset_context']}\n\n"
                             f"Worker outputs:\n{output_snapshot}\n\n"
-                            "Return a clear report with sections: Executive Summary, Key Findings, Risks, and Recommendations."
+                            f"{format_instruction}"
                         )
                         if on_token:
                             # Stream the final report token-by-token.

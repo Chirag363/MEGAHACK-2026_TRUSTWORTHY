@@ -217,6 +217,45 @@ class ChatSessionService:
             return "New chat"
         return compact[:72]
 
+    def _ensure_unique_title(
+        self,
+        desired_title: str,
+        current_session_id: str,
+        user_id: str | None,
+    ) -> str:
+        base = (desired_title or "New chat").strip() or "New chat"
+        existing_titles: set[str] = set()
+
+        if self._collection is not None:
+            query: dict[str, object] = {"session_id": {"$ne": current_session_id}}
+            if user_id:
+                query["user_id"] = user_id
+            cursor = self._collection.find(query, {"title": 1})
+            existing_titles = {
+                str(item.get("title", "")).strip()
+                for item in cursor
+                if str(item.get("title", "")).strip()
+            }
+        else:
+            with self._lock:
+                for session in self._sessions.values():
+                    if session.session_id == current_session_id:
+                        continue
+                    if user_id and session.user_id != user_id:
+                        continue
+                    if session.title.strip():
+                        existing_titles.add(session.title.strip())
+
+        if base not in existing_titles:
+            return base
+
+        index = 2
+        while True:
+            candidate = f"{base} ({index})"
+            if candidate not in existing_titles:
+                return candidate
+            index += 1
+
     def create_session(
         self,
         user_id: str | None = None,
@@ -255,7 +294,7 @@ class ChatSessionService:
         existing = self.get_session(resolved_id, user_id=user_id)
         created_at = existing.created_at if existing else _utcnow()
         now = _utcnow()
-        resolved_title = (title or dataset_name or "New chat").strip() or "New chat"
+        resolved_title = (title or (existing.title if existing else "New chat")).strip() or "New chat"
 
         session = ChatSession(
             session_id=resolved_id,
@@ -348,8 +387,15 @@ class ChatSessionService:
             raise KeyError(session_id)
 
         session.messages.append(ChatMessage(role=role, content=content))
-        if role == "user" and (not session.title or session.title == "New chat"):
-            session.title = self._title_from_content(content)
+        if role == "user" and (
+            not session.title or session.title == "New chat" or session.title == session.dataset_name
+        ):
+            desired_title = self._title_from_content(content)
+            session.title = self._ensure_unique_title(
+                desired_title=desired_title,
+                current_session_id=session.session_id,
+                user_id=session.user_id,
+            )
         session.updated_at = _utcnow()
         self._save_session(session)
         return session
@@ -398,3 +444,21 @@ class ChatSessionService:
                 return artifact
 
         return None
+
+    def delete_session(self, session_id: str, user_id: str | None = None) -> bool:
+        if self._collection is not None:
+            query: dict[str, object] = {"session_id": session_id}
+            if user_id:
+                query["user_id"] = user_id
+            result = self._collection.delete_one(query)
+            return result.deleted_count > 0
+
+        with self._lock:
+            session = self._sessions.get(session_id)
+            if not session:
+                return False
+            if user_id and session.user_id != user_id:
+                return False
+            del self._sessions[session_id]
+            self._flush_file_store()
+            return True

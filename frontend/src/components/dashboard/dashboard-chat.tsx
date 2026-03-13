@@ -47,6 +47,29 @@ export type DashboardChatMessage = {
   content: string;
 };
 
+export type DashboardArtifact = {
+  artifact_id: string;
+  name: string;
+  kind: string;
+  created_at: string;
+  source_tool?: string;
+};
+
+function shouldShowCorrectedDatasetAction(content: string) {
+  const text = content.toLowerCase();
+  const hints = [
+    "corrected dataset",
+    "cleaned dataset",
+    "cleaned csv",
+    "imputed",
+    "imputation",
+    "artifact id",
+    "download the cleaned",
+    "download corrected",
+  ];
+  return hints.some((hint) => text.includes(hint));
+}
+
 type DashboardChatProps = {
   className?: string;
   messages: DashboardChatMessage[];
@@ -72,6 +95,8 @@ type DashboardChatProps = {
   onSaveReport?: (message: DashboardChatMessage) => void;
   /** Called when user wants to download a report message as PDF. */
   onDownloadPdf?: (message: DashboardChatMessage) => void;
+  artifacts?: DashboardArtifact[];
+  onDownloadArtifact?: (artifact: DashboardArtifact) => Promise<void> | void;
 };
 
 export default function DashboardChat({
@@ -93,6 +118,8 @@ export default function DashboardChat({
   isAgentPipelineRunning = false,
   onSaveReport,
   onDownloadPdf,
+  artifacts = [],
+  onDownloadArtifact,
 }: DashboardChatProps) {
   const [input, setInput] = useState("");
   const [savedMessageIds, setSavedMessageIds] = useState<Set<string>>(new Set());
@@ -102,6 +129,17 @@ export default function DashboardChat({
     () => messages.filter((message) => message.role !== "system"),
     [messages]
   );
+
+  const latestDownloadableArtifact = useMemo(() => {
+    if (artifacts.length === 0) return null;
+    const cleaned = artifacts.filter((item) => item.kind === "cleaned_dataset");
+    const pool = cleaned.length > 0 ? cleaned : artifacts;
+    return [...pool].sort((a, b) => {
+      const aTs = Date.parse(a.created_at || "") || 0;
+      const bTs = Date.parse(b.created_at || "") || 0;
+      return bTs - aTs;
+    })[0];
+  }, [artifacts]);
 
   const handleSubmit = (message: PromptInputMessage) => {
     const text = message.text.trim();
@@ -202,6 +240,26 @@ export default function DashboardChat({
             </span>
           </div>
         )}
+
+        {artifacts.length > 0 && onDownloadArtifact && (
+          <div className="mx-4 mb-3 rounded-lg border border-cyan-500/20 bg-cyan-500/8 px-3 py-2">
+            <p className="text-[11px] font-medium text-cyan-300/90">Generated files</p>
+            <div className="mt-1.5 flex flex-wrap gap-1.5">
+              {artifacts.map((artifact) => (
+                <button
+                  key={artifact.artifact_id}
+                  type="button"
+                  onClick={() => void onDownloadArtifact(artifact)}
+                  className="inline-flex items-center gap-1.5 rounded-md border border-cyan-400/30 bg-cyan-400/10 px-2 py-1 text-[11px] text-cyan-200 transition-colors hover:border-cyan-300/50 hover:bg-cyan-400/15"
+                  title={`Download ${artifact.name}`}
+                >
+                  <DownloadIcon className="size-3" />
+                  <span className="max-w-[220px] truncate">{artifact.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Messages Area - Scrollable via Conversation */}
@@ -232,6 +290,10 @@ export default function DashboardChat({
               const isAssistantDone =
                 message.role === "assistant" && !isStreaming && message.content.trim().length > 0;
               const isSaved = savedMessageIds.has(message.id);
+              const showCorrectedDatasetAction =
+                isAssistantDone &&
+                Boolean(onDownloadArtifact && latestDownloadableArtifact) &&
+                shouldShowCorrectedDatasetAction(message.content);
 
               return (
                 <Message
@@ -266,8 +328,8 @@ export default function DashboardChat({
                     )}
                   </MessageContent>
 
-                  {/* Report action buttons — shown on completed assistant messages */}
-                  {isAssistantDone && (onSaveReport || onDownloadPdf) && (
+                  {/* Report/file action buttons — shown on completed assistant messages */}
+                  {isAssistantDone && (onSaveReport || onDownloadPdf || showCorrectedDatasetAction) && (
                     <div className="mt-2 flex items-center gap-1.5">
                       {onSaveReport && (
                         <button
@@ -303,6 +365,18 @@ export default function DashboardChat({
                         >
                           <DownloadIcon className="size-3" />
                           Download PDF
+                        </button>
+                      )}
+
+                      {showCorrectedDatasetAction && onDownloadArtifact && latestDownloadableArtifact && (
+                        <button
+                          type="button"
+                          title={`Download ${latestDownloadableArtifact.name}`}
+                          onClick={() => void onDownloadArtifact(latestDownloadableArtifact)}
+                          className="flex items-center gap-1.5 rounded-lg border border-cyan-400/30 bg-cyan-400/10 px-2.5 py-1 text-[11px] font-medium text-cyan-200 transition-all hover:border-cyan-300/50 hover:bg-cyan-400/15"
+                        >
+                          <DownloadIcon className="size-3" />
+                          Download corrected dataset
                         </button>
                       )}
                     </div>
