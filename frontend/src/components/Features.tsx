@@ -116,7 +116,7 @@ function FeatureSlide({
               display: 'inline-flex', alignItems: 'center', gap: '7px',
               padding: '4px 12px', background: 'rgba(255,255,255,0.06)',
               border: '1px solid rgba(255,255,255,0.1)', borderRadius: '50px',
-              fontSize: '10px', fontWeight: 700, color: '#777',
+              fontSize: '10px', fontWeight: 700, color: 'var(--text-primary)',
               letterSpacing: '0.08em', textTransform: 'uppercase' as const,
               marginBottom: '18px',
             }}>
@@ -136,7 +136,7 @@ function FeatureSlide({
               fontSize: 'clamp(26px, 3.5vw, 42px)',
               fontWeight: 800, lineHeight: 1.15,
               letterSpacing: '-0.025em',
-              marginBottom: '16px', color: '#fff',
+              marginBottom: '16px', color: 'var(--text-primary)',
             }}>
               {feature.title}
             </h3>
@@ -155,7 +155,7 @@ function FeatureSlide({
                   background: 'rgba(255,255,255,0.06)',
                   border: '1px solid rgba(255,255,255,0.1)',
                   borderRadius: '20px', fontSize: '11px',
-                  color: '#888', fontWeight: 500,
+                  color: 'var(--text-primary)', fontWeight: 500,
                 }}>
                   {tag}
                 </span>

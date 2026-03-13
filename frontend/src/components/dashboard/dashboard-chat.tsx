@@ -9,8 +9,8 @@ import {
 import {
   Message,
   MessageContent,
-  MessageResponse,
 } from "@/components/ai-elements/message";
+import { RichMessageResponse } from "@/components/ai-elements/rich-message-response";
 import {
   Reasoning,
   ReasoningContent,
@@ -155,21 +155,21 @@ export default function DashboardChat({
   return (
     <section
       className={cn(
-        "flex h-full min-h-0 flex-col rounded-2xl border border-white/10 bg-black/30 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]",
+        "flex h-full min-h-0 flex-col rounded-2xl border border-[var(--chat-border)] bg-[var(--chat-surface)] shadow-[inset_0_1px_0_var(--chat-border-soft)]",
         className
       )}
     >
       {/* Header - Fixed */}
-      <div className="shrink-0 border-b border-white/8">
+      <div className="shrink-0 border-b border-[var(--chat-border-soft)]">
         <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-5">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-400/90">
               {title}
             </p>
-            <p className="mt-0.5 text-xs text-white/55">{description}</p>
+            <p className="mt-0.5 text-xs text-[var(--chat-text-soft)]">{description}</p>
           </div>
           <Button
-            className="h-8 gap-1.5 border border-white/12 bg-white/5 px-3 text-xs text-white/70 hover:bg-white/10 hover:text-white"
+            className="h-8 gap-1.5 border border-[var(--chat-border)] bg-[var(--chat-surface-elev)] px-3 text-xs text-[var(--chat-text-soft)] hover:bg-[var(--chat-surface-elev)] hover:text-[var(--chat-text)]"
             disabled={disabled || visibleMessages.length === 0}
             onClick={onClear}
             size="sm"
@@ -267,7 +267,7 @@ export default function DashboardChat({
         <ConversationContent>
           {visibleMessages.length === 0 ? (
             <ConversationEmptyState
-              icon={<MessageSquareIcon className="size-9 text-white/40" />}
+              icon={<MessageSquareIcon className="size-9 text-[var(--chat-text-muted)]" />}
               title="Start a conversation"
               description={
                 hasDataset
@@ -317,9 +317,9 @@ export default function DashboardChat({
                      * The cursor lives OUTSIDE MessageResponse so Streamdown
                      * always receives a clean string as children.
                      */}
-                    <MessageResponse isAnimating={isStreaming}>
+                    <RichMessageResponse isAnimating={isStreaming}>
                       {message.content}
-                    </MessageResponse>
+                    </RichMessageResponse>
                     {isStreaming && (
                       <span
                         aria-hidden
@@ -390,13 +390,13 @@ export default function DashboardChat({
       </Conversation>
 
       {/* Input Area - Fixed at Bottom */}
-      <div className="shrink-0 border-t border-white/8 p-4 sm:px-5 sm:pb-5 sm:pt-3">
+      <div className="shrink-0 border-t border-[var(--chat-border-soft)] p-4 sm:px-5 sm:pb-5 sm:pt-3">
           <PromptInput
-            className="w-full rounded-xl border border-white/10 bg-white/3"
+            className="w-full rounded-xl border border-[var(--chat-border)] bg-[var(--chat-surface-elev)]"
             onSubmit={handleSubmit}
           >
             <PromptInputTextarea
-              className="min-h-11 px-3 pt-2.5 text-sm text-white placeholder:text-white/35"
+              className="min-h-11 px-3 pt-2.5 text-sm text-[var(--chat-text)] placeholder:text-[var(--chat-text-muted)]"
               disabled={disabled || isSending}
               onChange={(e) => setInput(e.currentTarget.value)}
               placeholder={
@@ -409,7 +409,7 @@ export default function DashboardChat({
               value={input}
             />
 
-            <PromptInputFooter className="border-t border-white/8 px-2.5 py-2">
+            <PromptInputFooter className="border-t border-[var(--chat-border-soft)] px-2.5 py-2">
               <PromptInputTools>
                 {onFileUpload && (
                   <>
@@ -423,7 +423,7 @@ export default function DashboardChat({
                       disabled={isUploading}
                       onClick={handleFileClick}
                       className={cn(
-                        "flex h-7 w-7 items-center justify-center rounded-lg text-white/50 transition-colors hover:bg-white/8 hover:text-white/80",
+                        "flex h-7 w-7 items-center justify-center rounded-lg text-[var(--chat-text-muted)] transition-colors hover:bg-[var(--chat-surface-elev)] hover:text-[var(--chat-text)]",
                         isUploading && "cursor-wait opacity-60"
                       )}
                     >

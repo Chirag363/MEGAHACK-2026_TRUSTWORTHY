@@ -14,7 +14,7 @@ const ArrowUpRight = () => (
 const NAV_ITEMS = [
   {
     label: 'Home',
-    bgColor: '#0D0716',
+    bgColor: 'var(--nav-card-1)',
     links: [
       { label: 'Overview', href: '#home',     aria: 'Go to overview' },
       { label: 'Features', href: '#features', aria: 'Go to features' },
@@ -22,7 +22,7 @@ const NAV_ITEMS = [
   },
   {
     label: 'About',
-    bgColor: '#170D27',
+    bgColor: 'var(--nav-card-2)',
     links: [
       { label: 'Our Mission',  href: '#about', aria: 'Our mission' },
       { label: 'How It Works', href: '#about', aria: 'How it works' },
@@ -30,7 +30,7 @@ const NAV_ITEMS = [
   },
   {
     label: 'Contact',
-    bgColor: '#271E37',
+    bgColor: 'var(--nav-card-3)',
     links: [
       { label: 'Get In Touch', href: '#contact', aria: 'Contact us' },
       { label: 'LinkedIn',     href: '#',        aria: 'LinkedIn' },
@@ -161,7 +161,7 @@ export default function Navbar() {
           width: '100%', 
           maxWidth: isSqueezed ? '70px' : '500px',
           height: `${TOP_H}px`,
-          background: '#ffffff',
+          background: 'var(--nav-surface)',
           borderRadius: '30px',
           overflow: 'hidden',
           boxShadow: isSqueezed 
@@ -178,7 +178,7 @@ export default function Navbar() {
           height: `${TOP_H}px`,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '0 10px',
-          zIndex: 2, background: '#ffffff',
+          zIndex: 2, background: 'var(--nav-surface-strong)',
         }}>
 
           {/* Hamburger / X */}
@@ -198,13 +198,13 @@ export default function Navbar() {
           >
             <span style={{
               display: 'block', width: '22px', height: '2px',
-              background: '#111', borderRadius: '2px', transformOrigin: 'center',
+              background: 'var(--nav-ink)', borderRadius: '2px', transformOrigin: 'center',
               transition: 'transform 0.28s ease',
               transform: open ? 'translateY(3.5px) rotate(45deg)' : 'none',
             }} />
             <span style={{
               display: 'block', width: '22px', height: '2px',
-              background: '#111', borderRadius: '2px', transformOrigin: 'center',
+              background: 'var(--nav-ink)', borderRadius: '2px', transformOrigin: 'center',
               transition: 'transform 0.28s ease',
               transform: open ? 'translateY(-3.5px) rotate(-45deg)' : 'none',
             }} />
@@ -230,7 +230,7 @@ export default function Navbar() {
             {/* The Text scales and fades out when squeezed */}
             <span style={{
               fontFamily: 'Outfit, sans-serif', fontWeight: 800,
-              fontSize: '25px', color: '#111', letterSpacing: '-0.025em',
+              fontSize: '25px', color: 'var(--nav-ink)', letterSpacing: '-0.025em',
               whiteSpace: 'nowrap',
               opacity: isSqueezed ? 0 : 1,
               transform: isSqueezed ? 'scale(0.5) translateX(-10px)' : 'scale(1) translateX(0)',
@@ -240,7 +240,7 @@ export default function Navbar() {
               transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
               display: 'inline-block',
             }}>
-              Insight<span style={{ color: '#666' }}>Forge</span>
+              Insight<span style={{ color: 'var(--text-secondary)' }}>Forge</span>
             </span>
           </a>
 
@@ -266,13 +266,13 @@ export default function Navbar() {
                 }}
                 style={{
                   display: 'inline-flex', alignItems: 'center',
-                  padding: '9px 18px', background: '#111', color: '#fff',
+                  padding: '9px 18px', background: 'var(--nav-cta-bg)', color: 'var(--nav-cta-text)',
                   borderRadius: '10px', textDecoration: 'none',
                   fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '13px',
                   flexShrink: 0, transition: 'background 0.2s', whiteSpace: 'nowrap',
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = '#333')}
-                onMouseLeave={(e) => (e.currentTarget.style.background = '#111')}
+                onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--nav-cta-hover)')}
+                onMouseLeave={(e) => (e.currentTarget.style.background = 'var(--nav-cta-bg)')}
               >
                 Dashboard
               </a>
@@ -291,14 +291,14 @@ export default function Navbar() {
                 }}
                 style={{
                   display: 'inline-flex', alignItems: 'center',
-                  padding: '9px 18px', background: '#111', color: '#fff',
+                  padding: '9px 18px', background: 'var(--nav-cta-bg)', color: 'var(--nav-cta-text)',
                   borderRadius: '10px', textDecoration: 'none',
                   fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '13px',
                   flexShrink: 0, transition: 'background 0.2s', whiteSpace: 'nowrap',
                   border: 'none', cursor: 'pointer',
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = '#333')}
-                onMouseLeave={(e) => (e.currentTarget.style.background = '#111')}
+                onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--nav-cta-hover)')}
+                onMouseLeave={(e) => (e.currentTarget.style.background = 'var(--nav-cta-bg)')}
               >
                 Get Started
               </button>
@@ -336,7 +336,7 @@ export default function Navbar() {
             >
               <div style={{
                 fontFamily: 'Outfit, sans-serif', fontWeight: 500,
-                fontSize: '18px', color: '#fff',
+                fontSize: '18px', color: 'var(--nav-card-ink)',
                 letterSpacing: '-0.02em', marginBottom: 'auto',
               }}>
                 {item.label}
@@ -348,11 +348,11 @@ export default function Navbar() {
                     onClick={(e) => { e.stopPropagation(); closeMenu(); }}
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: '5px',
-                      color: 'rgba(255,255,255,0.72)', textDecoration: 'none',
+                      color: 'var(--nav-card-link)', textDecoration: 'none',
                       fontSize: '13px', fontWeight: 500, transition: 'color 0.18s',
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = '#fff')}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.72)')}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--nav-card-link-hover)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--nav-card-link)')}
                   >
                     <ArrowUpRight />{lnk.label}
                   </a>

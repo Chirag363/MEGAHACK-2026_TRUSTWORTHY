@@ -95,6 +95,7 @@ export default function ChatWorkspace() {
   const [isSwitching, setIsSwitching] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
   const [datasetSummary, setDatasetSummary] = useState("");
   const [datasetFileAvailable, setDatasetFileAvailable] = useState(true);
   const [artifacts, setArtifacts] = useState<DashboardArtifact[]>([]);
@@ -643,21 +644,51 @@ export default function ChatWorkspace() {
     };
   }, [createSession, fetchSessionById, fetchSessions]);
 
+  const clearChatHistory = useCallback(async () => {
+    if (sessions.length === 0) return;
+    setIsClearing(true);
+    try {
+      for (const session of sessions) {
+        await deleteSession(session.session_id);
+      }
+      await handleNewChat();
+      toast.success("Chat history cleared.");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unable to clear chat history.";
+      toast.error(message);
+    } finally {
+      setIsClearing(false);
+    }
+  }, [sessions, deleteSession, handleNewChat]);
+
   return (
     <div className="grid h-full min-h-0 flex-1 gap-4 px-4 lg:grid-cols-[300px_minmax(0,1fr)] lg:px-6">
       {/* ── Chat History Sidebar ── */}
-      <aside className="flex h-full min-h-0 flex-col rounded-2xl border border-white/10 bg-black/30 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+      <aside className="flex h-full min-h-0 flex-col rounded-2xl border border-[var(--chat-border)] bg-[var(--chat-surface)] p-3 shadow-[inset_0_1px_0_var(--chat-border-soft)]">
         <div className="mb-3 flex items-center justify-between px-1">
-          <h2 className="text-sm font-semibold tracking-tight text-white/80">Chat History</h2>
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-8 gap-1.5 border-white/12 bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
-            onClick={() => void handleNewChat()}
-          >
-            <PlusIcon className="size-3.5" />
-            New
-          </Button>
+          <h2 className="text-sm font-semibold tracking-tight text-[var(--chat-text)]">Chat History</h2>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 gap-1.5 border-[var(--chat-border)] bg-[var(--chat-surface-elev)] text-[var(--chat-text-soft)] hover:bg-[var(--chat-surface-elev)] hover:text-[var(--chat-text)]"
+              onClick={() => void clearChatHistory()}
+              disabled={isBooting || isClearing || sessions.length === 0}
+            >
+              <Trash2Icon className="size-3.5" />
+              {isClearing ? "Clearing..." : "Clear"}
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 gap-1.5 border-[var(--chat-border)] bg-[var(--chat-surface-elev)] text-[var(--chat-text-soft)] hover:bg-[var(--chat-surface-elev)] hover:text-[var(--chat-text)]"
+              onClick={() => void handleNewChat()}
+              disabled={isBooting || isClearing}
+            >
+              <PlusIcon className="size-3.5" />
+              New
+            </Button>
+          </div>
         </div>
 
         <div className="flex-1 space-y-1 overflow-y-auto pr-0.5">
@@ -667,8 +698,8 @@ export default function ChatWorkspace() {
               className={cn(
                 "flex w-full items-start gap-2 rounded-xl border px-2 py-2 transition-colors",
                 activeSessionId === chat.session_id
-                  ? "border-white/14 bg-white/8"
-                  : "border-transparent hover:border-white/10 hover:bg-white/5"
+                  ? "border-[var(--chat-border)] bg-[var(--chat-surface-elev)]"
+                  : "border-transparent hover:border-[var(--chat-border)] hover:bg-[var(--chat-surface-elev)]"
               )}
             >
               <button
@@ -676,16 +707,16 @@ export default function ChatWorkspace() {
                 onClick={() => void openSession(chat.session_id)}
                 className="flex min-w-0 flex-1 cursor-pointer items-start gap-2.5 text-left"
               >
-                <MessageSquareMoreIcon className="mt-0.5 size-4 shrink-0 text-white/40" />
+                <MessageSquareMoreIcon className="mt-0.5 size-4 shrink-0 text-[var(--chat-text-muted)]" />
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-medium text-white/85">
+                  <span className="block truncate text-sm font-medium text-[var(--chat-text)]">
                     {chat.title || "New chat"}
                   </span>
-                  <span className="block truncate text-xs text-white/40">
+                  <span className="block truncate text-xs text-[var(--chat-text-muted)]">
                     {chat.dataset_name ? `📊 ${chat.dataset_name}` : chat.preview || "No messages yet"}
                   </span>
                 </span>
-                <span className="shrink-0 text-[10px] text-white/35">
+                <span className="shrink-0 text-[10px] text-[var(--chat-text-muted)]">
                   {formatRelativeTime(chat.updated_at)}
                 </span>
               </button>
@@ -695,7 +726,7 @@ export default function ChatWorkspace() {
                 aria-label="Delete chat"
                 title="Delete chat"
                 onClick={() => void handleDeleteChat(chat.session_id)}
-                className="mt-0.5 shrink-0 rounded-md p-1 text-white/35 transition-colors hover:bg-white/10 hover:text-red-300"
+                className="mt-0.5 shrink-0 rounded-md p-1 text-[var(--chat-text-muted)] transition-colors hover:bg-[var(--chat-surface-elev)] hover:text-red-300"
               >
                 <Trash2Icon className="size-3.5" />
               </button>
@@ -703,8 +734,8 @@ export default function ChatWorkspace() {
           ))}
 
           {sessions.length === 0 && (
-            <div className="rounded-xl border border-dashed border-white/10 px-3 py-3 text-xs text-white/35">
-              No chats yet. Click <span className="font-medium text-white/60">+ New</span> to start.
+            <div className="rounded-xl border border-dashed border-[var(--chat-border)] px-3 py-3 text-xs text-[var(--chat-text-muted)]">
+              No chats yet. Click <span className="font-medium text-[var(--chat-text)]">+ New</span> to start.
             </div>
           )}
         </div>
