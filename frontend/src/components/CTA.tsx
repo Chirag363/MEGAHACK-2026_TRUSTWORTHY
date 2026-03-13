@@ -53,7 +53,7 @@ export default function CTA() {
             Join forward-thinking businesses using InsightForge to turn raw data into competitive advantage — in minutes, not weeks.
           </p>
           <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap', position: 'relative', zIndex: 1 }}>
-            <a href="#contact" className="btn-primary">Start Your Journey <ArrowRight size={16} /></a>
+            <a href="/dashboard" className="btn-primary">Start Your Journey <ArrowRight size={16} /></a>
             <a href="#about"   className="btn-outline">See How It Works</a>
           </div>
         </motion.div>

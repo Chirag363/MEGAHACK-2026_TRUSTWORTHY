@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState, useLayoutEffect, useCallback } from 'react';
+import { useAuth, useClerk } from '@clerk/nextjs';
 import InsightIcon from './InsightIcon';
 
 const ArrowUpRight = () => (
@@ -56,6 +57,8 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const { isSignedIn } = useAuth();
+  const { openSignIn } = useClerk();
   
   const navRef   = useRef<HTMLElement>(null);
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
@@ -248,22 +251,58 @@ export default function Navbar() {
             transform: isSqueezed ? 'scale(0.8) translateX(10px)' : 'scale(1) translateX(0)',
             transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
           }}>
-            <a
-              href="#contact"
-              className="nav-cta"
-              onClick={(e) => { if (isSqueezed) { e.preventDefault(); e.stopPropagation(); } else { e.stopPropagation(); setIsExpanded(false); } }}
-              style={{
-                display: 'inline-flex', alignItems: 'center',
-                padding: '9px 18px', background: '#111', color: '#fff',
-                borderRadius: '10px', textDecoration: 'none',
-                fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '13px',
-                flexShrink: 0, transition: 'background 0.2s', whiteSpace: 'nowrap',
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = '#333')}
-              onMouseLeave={(e) => (e.currentTarget.style.background = '#111')}
-            >
-              Get Started
-            </a>
+            {isSignedIn ? (
+              <a
+                href="/dashboard"
+                className="nav-cta"
+                onClick={(e) => {
+                  if (isSqueezed) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return;
+                  }
+                  e.stopPropagation();
+                  setIsExpanded(false);
+                }}
+                style={{
+                  display: 'inline-flex', alignItems: 'center',
+                  padding: '9px 18px', background: '#111', color: '#fff',
+                  borderRadius: '10px', textDecoration: 'none',
+                  fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '13px',
+                  flexShrink: 0, transition: 'background 0.2s', whiteSpace: 'nowrap',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = '#333')}
+                onMouseLeave={(e) => (e.currentTarget.style.background = '#111')}
+              >
+                Dashboard
+              </a>
+            ) : (
+              <button
+                type="button"
+                className="nav-cta"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (isSqueezed) return;
+                  setIsExpanded(false);
+                  openSignIn({
+                    forceRedirectUrl: '/dashboard',
+                    fallbackRedirectUrl: '/dashboard',
+                  });
+                }}
+                style={{
+                  display: 'inline-flex', alignItems: 'center',
+                  padding: '9px 18px', background: '#111', color: '#fff',
+                  borderRadius: '10px', textDecoration: 'none',
+                  fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '13px',
+                  flexShrink: 0, transition: 'background 0.2s', whiteSpace: 'nowrap',
+                  border: 'none', cursor: 'pointer',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = '#333')}
+                onMouseLeave={(e) => (e.currentTarget.style.background = '#111')}
+              >
+                Get Started
+              </button>
+            )}
           </div>
         </div>
 
