@@ -18,14 +18,68 @@ prompt_template: |
   {prior_outputs}
 
   Use tool outputs and propose concrete chart plans, grouped by business question, with expected insight from each chart.
-  When user asks for visual/diagram output, include at least one valid Mermaid diagram inside a fenced block:
+  When actual chart numbers are needed, use the dataset tools first:
+  - `distinct_values` to inspect categories like Region or Product Name
+  - `aggregate_data` for grouped bar/pie/comparison charts
+  - `time_series_aggregate` for monthly/quarterly/yearly trend charts
+  - `entity_performance_metrics` for entity-level revenue, profit/margin, and growth views
+  When the user asks for visual, chart, dashboard, diagram, comparison, trend, distribution, composition, relationship, or 3D output, include at least one supported visualization block.
+  Prefer real chart specs over Mermaid when the request is data-centric.
+  Supported blocks:
+  1. Mermaid for workflows, pipelines, and relationships:
   ```mermaid
   flowchart TD
     A[Raw Data] --> B[Insight]
   ```
-  Keep Mermaid syntax valid and concise.
+  2. Interactive 2D charts with strict JSON inside a viz-chart fence:
+  ```viz-chart
+  {
+    "type": "bar",
+    "title": "Revenue by Region",
+    "description": "Compares total revenue across regions.",
+    "insight": "North and West contribute most of the revenue.",
+    "xKey": "region",
+    "series": [
+      { "key": "revenue", "label": "Revenue", "color": "#22d3ee" }
+    ],
+    "data": [
+      { "region": "North", "revenue": 120000 },
+      { "region": "West", "revenue": 98000 }
+    ]
+  }
+  ```
+  3. Interactive 3D scatter views with strict JSON inside a viz-3d fence:
+  ```viz-3d
+  {
+    "title": "Product Performance Landscape",
+    "description": "Maps revenue, margin, and growth together.",
+    "insight": "Products in the high-revenue/high-margin/high-growth corner should be prioritized.",
+    "xLabel": "Revenue",
+    "yLabel": "Margin",
+    "zLabel": "Growth",
+    "points": [
+      { "label": "Product A", "x": 120000, "y": 32, "z": 18, "size": 14, "color": "#22d3ee" }
+    ]
+  }
+  ```
+  Visualization rules:
+  - Keep Mermaid syntax valid and concise.
   Mermaid rules:
   - Do not use HTML tags such as <br/> inside nodes.
   - Every node must have an identifier (example: A[Label], B{Decision}).
   - Avoid anonymous targets like "--> [Label]" or "--> {Label}".
+  - Keep JSON valid. No trailing commas, comments, or markdown inside JSON.
+  - Keep data concise but concrete. Use representative values from the dataset or tool output.
+  - Supported viz-chart types: bar, line, area, pie, donut, scatter.
+  - For pie and donut charts, include `nameKey` and `valueKey`. `labelKey` is tolerated by the frontend, but prefer `nameKey`.
+  - For single-series bar, line, and area charts, provide `xKey` plus either `yKey` or a one-item `series` array.
+  - For scatter charts, include `xKey` and `yKey`. The x values must be numeric or parseable ISO-style dates such as `2018-03-15`.
+  - Use viz-3d only when a third numeric dimension materially improves interpretation.
+  - The current custom 3D renderer supports scatter only, not surfaces or meshes.
+  - Every viz-3d point must contain numeric x, y, and z values. Never output null.
+  - If one requested dimension is unavailable, use 0 for that axis across the affected points and state that fallback in the description or insight.
+  - If a requested metric is unavailable, still generate the visualizations for the metrics that are available and explicitly mark the missing dimension.
+  - Only say a visualization cannot be generated after checking the relevant dataset tools and confirming the required column or metric is missing.
+  - Do not ask for or claim PNG, JPG, image-file, or binary chart generation. Output fenced Mermaid, viz-chart, or viz-3d blocks directly in the response.
+  - Add a short sentence before or after each visualization explaining why that view is useful.
 enabled: true

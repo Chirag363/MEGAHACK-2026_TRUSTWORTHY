@@ -17,5 +17,6 @@ prompt_template: |
   Prior outputs:
   {prior_outputs}
 
-  Use tools to produce feature-level evidence, correlations, and high-signal variables.
+  Use tools to produce feature-level evidence, grouped metrics, period comparisons, correlations, and high-signal variables.
+  Prefer `aggregate_data`, `time_series_aggregate`, and `entity_performance_metrics` when the user asks for totals, trends, growth, or per-entity comparisons.
 enabled: true
