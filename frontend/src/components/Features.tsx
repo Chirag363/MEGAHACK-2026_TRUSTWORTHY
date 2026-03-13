@@ -3,52 +3,69 @@
 import { useRef } from 'react';
 import { motion, useScroll, useTransform, MotionValue } from 'framer-motion';
 import {
-  Database, Wand2, Brain, BarChart2, FileText, GitBranch,
   CheckCircle2, ArrowRight,
 } from 'lucide-react';
 
 const features = [
   {
-    icon: Database,
+    iconSrc: '/feature-agent-icons/orchestration.png',
+    iconAlt: 'Orchestration Agent icon',
+    iconCreditHref: 'https://www.flaticon.com/free-icons/agent',
+    iconCreditText: 'Agent icons created by Freepik - Flaticon',
     number: '01',
-    title: 'Smart Data Ingestion',
-    desc: 'Connect CSV, SQL, REST APIs, or cloud data warehouses in seconds. InsightForge auto-detects your schema, infers data types, and maps relationships — so your pipeline starts clean from day one.',
-    tags: ['Multi-format', 'Auto-schema', 'Cloud-ready'],
+    title: 'Orchestration Agent',
+    desc: 'Coordinates the workflow and manages communication between all agents.',
+    tags: ['Orchestration', 'Routing', 'Task Management'],
   },
   {
-    icon: Wand2,
+    iconSrc: '/feature-agent-icons/cleaning.png',
+    iconAlt: 'Data Cleaning Agent icon',
+    iconCreditHref: 'https://www.flaticon.com/free-icons/toilet',
+    iconCreditText: 'Toilet icons created by IconBaandar - Flaticon',
     number: '02',
-    title: 'AI Data Cleaning',
-    desc: 'Our cleaning agent handles missing values, duplicates, outliers, and encoding inconsistencies with zero configuration. Every transformation is logged in a full audit trail.',
-    tags: ['Outlier Detection', 'Auto-impute', 'Audit Trail'],
+    title: 'Data Cleaning Agent',
+    desc: 'Handles missing values, detects incorrect data types, removes duplicates, and prepares the dataset.',
+    tags: ['Auto-impute', 'Deduplication', 'Type Checking'],
   },
   {
-    icon: Brain,
+    iconSrc: '/feature-agent-icons/feature.png',
+    iconAlt: 'Feature Analysis Agent icon',
+    iconCreditHref: 'https://www.flaticon.com/free-icons/financial-report',
+    iconCreditText: 'Financial report icons created by fatihicon - Flaticon',
     number: '03',
-    title: 'Analysis Orchestrator',
-    desc: 'A master orchestrator dispatches specialized sub-agents — statistical, predictive, and trend engines — in parallel. Results are synthesized into a unified, conflict-resolved analysis layer.',
-    tags: ['Multi-agent', 'Parallel', 'Predictive'],
+    title: 'Feature Analysis Agent',
+    desc: 'Identifies relationships between columns, calculates correlations, and finds important features using analytical tools.',
+    tags: ['Correlation', 'Relationships', 'Feature Importance'],
   },
   {
-    icon: BarChart2,
+    iconSrc: '/feature-agent-icons/visualization.png',
+    iconAlt: 'Visualization Agent icon',
+    iconCreditHref: 'https://www.flaticon.com/free-icons/data-visualization',
+    iconCreditText: 'Data visualization icons created by smashingstocks - Flaticon',
     number: '04',
-    title: 'Visualization Engine',
-    desc: 'The engine evaluates your data type, cardinality, and relationships, then automatically selects the most effective chart type. Outputs are interactive and export-friendly.',
-    tags: ['Auto-select', 'Interactive', 'Export'],
+    title: 'Visualization Agent',
+    desc: 'Generates charts such as pie charts, bar graphs, correlation heatmaps, and diagram representations (e.g., Mermaid diagrams).',
+    tags: ['Heatmaps', 'Interactive Charts', 'Mermaid Diagrams'],
   },
   {
-    icon: FileText,
+    iconSrc: '/feature-agent-icons/insights.png',
+    iconAlt: 'Insight Generation Agent icon',
+    iconCreditHref: 'https://www.flaticon.com/free-icons/user-research',
+    iconCreditText: 'User research icons created by Iconic Artisan - Flaticon',
     number: '05',
-    title: 'Insight Narrator',
-    desc: 'Raw numbers become boardroom-ready narratives. The narrator converts statistical results into plain-English summaries, highlighting key findings, risks, and recommended actions.',
-    tags: ['NLP', 'Summaries', 'Actionable'],
+    title: 'Insight Generation Agent',
+    desc: 'Interprets the cleaned data and feature analysis results to extract meaningful insights and patterns.',
+    tags: ['Pattern Extraction', 'NLP Summaries', 'Advanced Algorithms'],
   },
   {
-    icon: GitBranch,
+    iconSrc: '/feature-agent-icons/recommendation.png',
+    iconAlt: 'Recommendation Agent icon',
+    iconCreditHref: 'https://www.flaticon.com/free-icons/recomendation',
+    iconCreditText: 'Recomendation icons created by Blackonion02 - Flaticon',
     number: '06',
-    title: 'Pipeline Automation',
-    desc: 'Schedule recurring analytics pipelines on any cadence, set threshold-based KPI alerts, and share live dashboards with stakeholders — without writing a single line of code.',
-    tags: ['Scheduling', 'Alerts', 'Sharing'],
+    title: 'Recommendation Agent',
+    desc: 'Converts insights into actionable business recommendations and highlights potential impact.',
+    tags: ['Actionable Steps', 'Business ROI', 'Impact Tracking'],
   },
 ];
 
@@ -64,7 +81,6 @@ function FeatureSlide({
   scrollYProgress: MotionValue<number>;
   index: number;
 }) {
-  const Icon = feature.icon;
   const start = index / COUNT;
   const end   = (index + 1) / COUNT;
 
@@ -104,7 +120,15 @@ function FeatureSlide({
               letterSpacing: '0.08em', textTransform: 'uppercase' as const,
               marginBottom: '18px',
             }}>
-              <Icon size={10} /> Agent
+              <span
+                style={{
+                  width: '7px',
+                  height: '7px',
+                  borderRadius: '999px',
+                  background: 'rgba(255,255,255,0.6)',
+                }}
+              />
+              Agent
             </div>
 
             <h3 style={{
@@ -137,6 +161,21 @@ function FeatureSlide({
                 </span>
               ))}
             </div>
+            <a
+              href={feature.iconCreditHref}
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                marginTop: '14px',
+                display: 'inline-block',
+                fontSize: '11px',
+                color: '#8f8f8f',
+                textDecoration: 'underline',
+                textUnderlineOffset: '2px',
+              }}
+            >
+              {feature.iconCreditText}
+            </a>
           </div>
 
           {/* Icon card */}
@@ -163,7 +202,18 @@ function FeatureSlide({
                   ...(c === 'br' ? { bottom: 14, right: 14, borderLeft: 'none', borderTop: 'none' } : {}),
                 }} />
               ))}
-              <Icon size={88} color="rgba(255,255,255,0.15)" strokeWidth={1} />
+              <img
+                src={feature.iconSrc}
+                alt={feature.iconAlt}
+                width={112}
+                height={112}
+                style={{
+                  width: '112px',
+                  height: '112px',
+                  objectFit: 'contain',
+                  opacity: 1,
+                }}
+              />
             </div>
           </div>
         </div>

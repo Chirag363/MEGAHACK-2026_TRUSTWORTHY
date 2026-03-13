@@ -1,14 +1,17 @@
 from __future__ import annotations
 
+import asyncio
+import json
 import logging
 import os
+import threading
 import time
 from pathlib import Path
 from uuid import uuid4
 
 from fastapi import FastAPI, File, Form, HTTPException, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 
 from app.core.logging_config import setup_logging
 from app.models.api import (
@@ -35,6 +38,13 @@ def _allowed_origins() -> list[str]:
 ROOT_DIR = Path(__file__).resolve().parents[1]
 CONFIG_PATH = ROOT_DIR / "config" / "agents.yaml"
 AGENTS_DIR = ROOT_DIR / "app" / "agents"
+
+
+def _dataset_file_available(dataset_path: str) -> bool:
+    """Return True only when the session's dataset file physically exists on disk."""
+    if not dataset_path:
+        return False
+    return Path(dataset_path).exists()
 
 session_service = ChatSessionService()
 analysis_service = AnalysisService(config_path=CONFIG_PATH, agents_dir=AGENTS_DIR)
@@ -198,6 +208,89 @@ def chat_message(payload: ChatRequest):
     )
 
 
+@app.post("/api/v1/chat/message/stream")
+async def chat_message_stream(payload: ChatRequest):
+    """SSE endpoint — streams agent events and final-report tokens to the client.
+
+    Event shapes (newline-delimited JSON after "data: "):
+      {"type": "agent_start", "agent": "<name>"}
+      {"type": "agent_done",  "agent": "<name>"}
+      {"type": "token",       "content": "<text>"}
+      {"type": "done",        "session_id": "<id>"}
+      {"type": "error",       "message": "<text>"}
+    """
+    run_id = uuid4().hex[:10]
+    logger.info("[run:%s] stream request received session_id=%s", run_id, payload.session_id)
+
+    session = session_service.get_session(payload.session_id, user_id=payload.user_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found.")
+
+    session_service.append_message(payload.session_id, "user", payload.message, user_id=payload.user_id)
+
+    recent_user_requests = [msg.content for msg in session.messages if msg.role == "user"][-3:]
+    recent_context = "\n".join(f"- {item}" for item in recent_user_requests)
+    base_dataset_context = session.dataset_context or "No dataset uploaded yet."
+    full_dataset_context = (
+        f"{base_dataset_context}\n\n"
+        f"Recent user analysis requests:\n{recent_context or '- None'}"
+    )
+
+    loop = asyncio.get_running_loop()
+    queue: asyncio.Queue[dict | None] = asyncio.Queue()
+
+    def on_event(event: dict) -> None:
+        """Called from the worker thread; pushes events into the async queue."""
+        asyncio.run_coroutine_threadsafe(queue.put(event), loop).result()
+
+    def run_workflow() -> None:
+        try:
+            result = analysis_service.run_streaming(
+                goal=payload.message,
+                dataset_context=full_dataset_context,
+                dataset_path=session.dataset_path,
+                run_id=run_id,
+                on_event=on_event,
+            )
+            reply = result["final_report"]
+            updated_session = session_service.append_message(
+                payload.session_id, "assistant", reply, user_id=payload.user_id
+            )
+            artifacts = result.get("artifacts", [])
+            if artifacts:
+                session_service.add_artifacts(payload.session_id, artifacts, user_id=payload.user_id)
+            logger.info("[run:%s] stream workflow completed reply_chars=%s", run_id, len(reply))
+            asyncio.run_coroutine_threadsafe(
+                queue.put({"type": "done", "session_id": payload.session_id}), loop
+            ).result()
+        except Exception as exc:
+            logger.exception("[run:%s] stream workflow failed", run_id)
+            asyncio.run_coroutine_threadsafe(
+                queue.put({"type": "error", "message": str(exc)}), loop
+            ).result()
+        finally:
+            asyncio.run_coroutine_threadsafe(queue.put(None), loop).result()
+
+    threading.Thread(target=run_workflow, daemon=True).start()
+
+    async def event_generator():
+        while True:
+            event = await queue.get()
+            if event is None:
+                break
+            yield f"data: {json.dumps(event)}\n\n"
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+            "Connection": "keep-alive",
+        },
+    )
+
+
 @app.get("/api/v1/chat/session/{session_id}", response_model=SessionResponse)
 def get_session(session_id: str, user_id: str | None = Query(default=None)):
     session = session_service.get_session(session_id, user_id=user_id)
@@ -210,6 +303,7 @@ def get_session(session_id: str, user_id: str | None = Query(default=None)):
         title=session.title,
         dataset_name=session.dataset_name,
         dataset_summary=session.dataset_summary,
+        dataset_file_available=_dataset_file_available(session.dataset_path),
         artifacts=session.artifacts,
         messages=session.messages,
         created_at=session.created_at,
@@ -257,6 +351,7 @@ def create_session(payload: CreateSessionRequest):
         title=session.title,
         dataset_name=session.dataset_name,
         dataset_summary=session.dataset_summary,
+        dataset_file_available=_dataset_file_available(session.dataset_path),
         artifacts=session.artifacts,
         messages=session.messages,
         created_at=session.created_at,

@@ -645,3 +645,20 @@ Instruction: Generate a concise visualization plan for the Superstore Sales data
 2026-03-14 00:44:38 | INFO | app.api | [request:934211d7] completed GET /api/v1/chat/sessions status=200 duration_ms=217.96
 2026-03-14 00:44:49 | INFO | app.api | [request:f656ec08] started GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158
 2026-03-14 00:44:49 | INFO | app.api | [request:f656ec08] completed GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158 status=200 duration_ms=14.05
+2026-03-14 01:48:03 | INFO | app.services.chat_session_service | ChatSessionService connected to MongoDB db=agent-orc collection=chat_sessions
+2026-03-14 01:51:25 | INFO | app.api | [request:f1f656de] started GET /api/v1/chat/sessions
+2026-03-14 01:51:25 | INFO | app.api | [request:f1f656de] completed GET /api/v1/chat/sessions status=200 duration_ms=23.02
+2026-03-14 01:51:26 | INFO | app.api | [request:57b2140e] started GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158
+2026-03-14 01:51:26 | INFO | app.api | [request:57b2140e] completed GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158 status=200 duration_ms=13.95
+2026-03-14 01:51:43 | INFO | app.api | [request:cdd0e701] started GET /api/v1/chat/sessions
+2026-03-14 01:51:43 | INFO | app.api | [request:cdd0e701] completed GET /api/v1/chat/sessions status=200 duration_ms=12.51
+2026-03-14 01:51:43 | INFO | app.api | [request:c3eb28c7] started GET /api/v1/chat/sessions
+2026-03-14 01:51:43 | INFO | app.api | [request:c3eb28c7] completed GET /api/v1/chat/sessions status=200 duration_ms=9.93
+2026-03-14 01:51:43 | INFO | app.api | [request:40f2b540] started GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158
+2026-03-14 01:51:43 | INFO | app.api | [request:40f2b540] completed GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158 status=200 duration_ms=8.97
+2026-03-14 01:54:19 | INFO | app.api | [request:03660281] started GET /api/v1/chat/sessions
+2026-03-14 01:54:19 | INFO | app.api | [request:de1ac1ee] started GET /api/v1/chat/sessions
+2026-03-14 01:54:19 | INFO | app.api | [request:03660281] completed GET /api/v1/chat/sessions status=200 duration_ms=12.71
+2026-03-14 01:54:19 | INFO | app.api | [request:de1ac1ee] completed GET /api/v1/chat/sessions status=200 duration_ms=126.66
+2026-03-14 01:54:20 | INFO | app.api | [request:682c5220] started GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158
+2026-03-14 01:54:20 | INFO | app.api | [request:682c5220] completed GET /api/v1/chat/session/75bd83aa-d493-4bc1-86d5-8f3518da3158 status=200 duration_ms=13.20

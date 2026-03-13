@@ -61,6 +61,10 @@ class SessionResponse(BaseModel):
     title: str = "New chat"
     dataset_name: str
     dataset_summary: str
+    # True when the dataset file physically exists on disk and can be used for analysis.
+    # False means the session had a dataset before but the file is no longer available
+    # (e.g. after a server restart) — the user must re-upload it.
+    dataset_file_available: bool = True
     artifacts: List[ArtifactItem] = Field(default_factory=list)
     messages: List[ChatMessage]
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

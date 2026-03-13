@@ -1,10 +1,22 @@
 "use client";
 
 import DashboardChat, { type DashboardChatMessage } from "@/components/dashboard/dashboard-chat";
+import { agentLabel, type AgentStep } from "@/components/ai-elements/reasoning";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { MessageSquareMoreIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { type ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
+
+type SavedReport = {
+  id: string;
+  messageId: string;
+  content: string;
+  title: string;
+  savedAt: string;
+  sessionId?: string;
+  datasetName?: string;
+};
 
 type ChatSessionListItem = {
   session_id: string;
@@ -27,14 +39,10 @@ type SessionResponse = {
   title: string;
   dataset_name: string;
   dataset_summary: string;
+  dataset_file_available: boolean;
   messages: BackendChatMessage[];
   created_at: string;
   updated_at: string;
-};
-
-type ChatResponse = {
-  session_id: string;
-  messages: BackendChatMessage[];
 };
 
 type DatasetUploadResponse = {
@@ -85,13 +93,21 @@ export default function ChatWorkspace() {
   const [isUploading, setIsUploading] = useState(false);
   const [isClearing, setIsClearing] = useState(false);
   const [datasetSummary, setDatasetSummary] = useState("");
+  const [datasetFileAvailable, setDatasetFileAvailable] = useState(true);
+  const [streamingMessageId, setStreamingMessageId] = useState<string | null>(null);
+  const [agentSteps, setAgentSteps] = useState<AgentStep[]>([]);
+  const [isAgentPipelineRunning, setIsAgentPipelineRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const activeSession = useMemo(
     () => sessions.find((session) => session.session_id === activeSessionId) ?? null,
     [sessions, activeSessionId]
   );
-  const hasDataset = Boolean(activeSession?.dataset_name?.trim());
+  const hasDatasetName = Boolean(activeSession?.dataset_name?.trim());
+  // File is missing when the session recorded a dataset name but the file is no
+  // longer available on the server (e.g. after a restart / redeployment).
+  const isDatasetFileMissing = hasDatasetName && !datasetFileAvailable;
+  const hasDataset = hasDatasetName && datasetFileAvailable;
 
   const fetchSessions = useCallback(async () => {
     const response = await fetch("/api/chat/sessions", {
@@ -149,6 +165,7 @@ export default function ChatWorkspace() {
         setActiveSessionId(session.session_id);
         setMessages(mapMessages(session.messages));
         setDatasetSummary(session.dataset_summary || "");
+        setDatasetFileAvailable(session.dataset_file_available ?? true);
       } catch (err) {
         const message = err instanceof Error ? err.message : "Unable to open chat session.";
         setError(message);
@@ -201,48 +218,123 @@ export default function ChatWorkspace() {
 
       if (!sessionId) {
         sessionId = await handleNewChat();
-        if (!sessionId) {
-          return;
-        }
+        if (!sessionId) return;
       }
 
-      const optimisticUserMessage: DashboardChatMessage = {
-        id: `local-${Date.now()}`,
-        role: "user",
-        content: text,
-      };
-      setMessages((prev) => [...prev, optimisticUserMessage]);
+      const userMsgId = `local-user-${Date.now()}`;
+      const assistantMsgId = `streaming-${Date.now()}`;
+
+      setMessages((prev) => [
+        ...prev,
+        { id: userMsgId, role: "user", content: text },
+        { id: assistantMsgId, role: "assistant", content: "" },
+      ]);
+      setStreamingMessageId(assistantMsgId);
+      setAgentSteps([]);
+      setIsAgentPipelineRunning(true);
       setIsSending(true);
 
       try {
-        const response = await fetch("/api/chat/message", {
+        const response = await fetch("/api/chat/stream", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            sessionId,
-            message: text,
-          }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId, message: text }),
         });
 
-        if (!response.ok) {
-          const payload = (await response.json().catch(() => ({}))) as { error?: string };
-          throw new Error(payload.error || "Failed to send message.");
+        if (!response.ok || !response.body) {
+          const errPayload = (await response.json().catch(() => ({}))) as { error?: string };
+          throw new Error(errPayload.error || "Failed to send message.");
         }
 
-        const payload = (await response.json()) as ChatResponse;
-        setMessages(mapMessages(payload.messages));
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        let firstTokenReceived = false;
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          // SSE blocks are separated by double newlines.
+          const blocks = buffer.split("\n\n");
+          buffer = blocks.pop() ?? "";
+
+          for (const block of blocks) {
+            const line = block.trim();
+            if (!line.startsWith("data: ")) continue;
+
+            let event: { type: string; content?: string; agent?: string; session_id?: string; message?: string };
+            try {
+              event = JSON.parse(line.slice(6)) as typeof event;
+            } catch {
+              continue;
+            }
+
+            if (event.type === "agent_start" && event.agent) {
+              const step: AgentStep = {
+                agent: event.agent,
+                label: agentLabel(event.agent),
+                status: "running",
+                startTime: Date.now(),
+              };
+              setAgentSteps((prev) => {
+                const exists = prev.some((s) => s.agent === event.agent);
+                return exists
+                  ? prev.map((s) => (s.agent === event.agent ? { ...s, status: "running" } : s))
+                  : [...prev, step];
+              });
+            } else if (event.type === "agent_done" && event.agent) {
+              setAgentSteps((prev) =>
+                prev.map((s) =>
+                  s.agent === event.agent
+                    ? { ...s, status: "done", durationMs: Date.now() - s.startTime }
+                    : s
+                )
+              );
+            } else if (event.type === "token" && event.content) {
+              // First token means the pipeline finished — collapse the reasoning panel.
+              if (!firstTokenReceived) {
+                firstTokenReceived = true;
+                setIsAgentPipelineRunning(false);
+              }
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === assistantMsgId
+                    ? { ...msg, content: msg.content + event.content }
+                    : msg
+                )
+              );
+            } else if (event.type === "error") {
+              throw new Error(event.message ?? "Agent workflow failed.");
+            }
+          }
+        }
+
+        // Replace optimistic local messages with the canonical server version.
+        if (sessionId) {
+          try {
+            const updated = await fetchSessionById(sessionId);
+            setMessages(mapMessages(updated.messages));
+          } catch {
+            // Non-fatal — optimistic messages are still correct.
+          }
+        }
         await refreshSessions();
       } catch (err) {
         const message = err instanceof Error ? err.message : "Message delivery failed.";
         setError(message);
-        setMessages((prev) => prev.filter((item) => item.id !== optimisticUserMessage.id));
+        // Remove both the optimistic user message and the empty assistant message.
+        setMessages((prev) =>
+          prev.filter((item) => item.id !== userMsgId && item.id !== assistantMsgId)
+        );
       } finally {
+        setStreamingMessageId(null);
+        setIsAgentPipelineRunning(false);
         setIsSending(false);
       }
     },
-    [activeSessionId, handleNewChat, hasDataset, refreshSessions]
+    [activeSessionId, fetchSessionById, handleNewChat, hasDataset, refreshSessions]
   );
 
   const uploadDataset = useCallback(
@@ -283,6 +375,7 @@ export default function ChatWorkspace() {
         setActiveSessionId(payload.session_id);
         setMessages(mapMessages(payload.messages));
         setDatasetSummary(payload.dataset_summary || "");
+        setDatasetFileAvailable(true);
         await refreshSessions();
       } catch (err) {
         const message = err instanceof Error ? err.message : "Dataset upload failed.";
@@ -293,31 +386,6 @@ export default function ChatWorkspace() {
     },
     [activeSessionId, handleNewChat, refreshSessions]
   );
-
-  const clearChatHistory = useCallback(async () => {
-    setError(null);
-    setIsClearing(true);
-    try {
-      const response = await fetch("/api/chat/sessions", {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        const payload = (await response.json().catch(() => ({}))) as { error?: string };
-        throw new Error(payload.error || "Failed to clear chat history.");
-      }
-
-      setSessions([]);
-      setActiveSessionId(null);
-      setMessages([]);
-      setDatasetSummary("");
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Unable to clear chat history.";
-      setError(message);
-    } finally {
-      setIsClearing(false);
-    }
-  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -349,6 +417,7 @@ export default function ChatWorkspace() {
           setActiveSessionId(created.session_id);
           setMessages(mapMessages(created.messages));
           setDatasetSummary(created.dataset_summary || "");
+          setDatasetFileAvailable(created.dataset_file_available ?? true);
           return;
         }
 
@@ -358,6 +427,7 @@ export default function ChatWorkspace() {
         setActiveSessionId(firstSession.session_id);
         setMessages(mapMessages(firstSession.messages));
         setDatasetSummary(firstSession.dataset_summary || "");
+        setDatasetFileAvailable(firstSession.dataset_file_available ?? true);
       } catch (err) {
         if (cancelled) return;
         const message = err instanceof Error ? err.message : "Failed to initialize chat.";
@@ -445,7 +515,9 @@ export default function ChatWorkspace() {
       {/* ── Main Chat Area ── */}
       <div className="flex h-full min-h-0 min-w-0 flex-col gap-3">
         {/* Chat component */}
+        {/* key forces a full remount on session switch so StickToBottom resets scroll */}
         <DashboardChat
+          key={activeSessionId ?? "none"}
           className="flex-1 h-full"
           messages={messages}
           onSend={sendMessage}
@@ -454,8 +526,14 @@ export default function ChatWorkspace() {
           disabled={isBooting || isUploading || !hasDataset}
           hasDataset={hasDataset}
           datasetName={activeSession?.dataset_name ?? undefined}
+          isDatasetFileMissing={isDatasetFileMissing}
           isUploading={isUploading}
           onFileUpload={uploadDataset}
+          streamingMessageId={streamingMessageId}
+          agentSteps={agentSteps}
+          isAgentPipelineRunning={isAgentPipelineRunning}
+          onSaveReport={saveReport}
+          onDownloadPdf={downloadPdf}
           description={
             activeSession
               ? hasDataset

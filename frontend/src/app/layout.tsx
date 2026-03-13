@@ -4,6 +4,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { ThemeProvider } from '@/components/theme-provider';
 import ThemeToggle from '@/components/theme-toggle';
 import './globals.css';
+import { Toaster } from 'sonner';
 
 export const metadata: Metadata = {
   title: 'InsightForge – AI-Orchestrated Data Analytics Platform',
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <ThemeToggle />
             </TooltipProvider>
           </ThemeProvider>
+          <Toaster position="bottom-right" theme="dark" richColors />
         </ClerkProvider>
       </body>
     </html>
