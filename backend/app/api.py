@@ -12,6 +12,7 @@ from fastapi.responses import FileResponse
 
 from app.core.logging_config import setup_logging
 from app.models.api import ChatRequest, ChatResponse, DatasetUploadResponse, SessionResponse
+from app.services.analysis_service import AnalysisService
 from app.services.chat_session_service import ChatSessionService
 from app.services.dataset_service import save_uploaded_dataset, summarize_dataset_upload
 

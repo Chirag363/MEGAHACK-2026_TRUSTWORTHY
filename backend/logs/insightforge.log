@@ -1,0 +1,8 @@
+2026-03-13 14:59:14 | INFO | app.api | [request:49e1eb5f] started GET /docs
+2026-03-13 14:59:14 | INFO | app.api | [request:49e1eb5f] completed GET /docs status=200 duration_ms=2.27
+2026-03-13 14:59:15 | INFO | app.api | [request:14221a0b] started GET /openapi.json
+2026-03-13 14:59:16 | INFO | app.api | [request:14221a0b] completed GET /openapi.json status=200 duration_ms=75.72
+2026-03-13 15:00:09 | INFO | app.api | [request:c1fe0ad4] started POST /api/v1/chat/upload
+2026-03-13 15:00:09 | INFO | app.api | upload received: filename=Sample - Superstore.csv session_id=string
+2026-03-13 15:00:09 | INFO | app.api | upload processed: session_id=string dataset_path=data\uploads\string\Sample - Superstore.csv summary=Uploaded Sample - Superstore.csv with 9994 rows and 21 columns. Columns: Row ID, Order ID, Order Date, Ship Date, Ship Mode, Customer ID, Customer Name, Segment, Country, City, State, Postal Code, Region, Product ID, Category, Sub-Category, Product Name, Sales, Quantity, Discount, Profit.
+2026-03-13 15:00:09 | INFO | app.api | [request:c1fe0ad4] completed POST /api/v1/chat/upload status=200 duration_ms=210.45
