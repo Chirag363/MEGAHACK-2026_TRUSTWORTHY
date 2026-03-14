@@ -18,6 +18,7 @@ import {
 } from "recharts";
 import { RotateCcwIcon } from "lucide-react";
 import { memo, type ReactElement, type ReactNode, useMemo, useRef, useState } from "react";
+import { parse as parseYaml } from "yaml";
 
 import { MessageResponse } from "@/components/ai-elements/message";
 import { Button } from "@/components/ui/button";
@@ -102,7 +103,7 @@ type PreparedScatterData = {
   xIsDate: boolean;
 };
 
-const BLOCK_PATTERN = /```(viz-chart|viz-3d)\s*\r?\n([\s\S]*?)```/g;
+const BLOCK_PATTERN = /```([a-zA-Z0-9_-]+)\s*\r?\n([\s\S]*?)```/g;
 const VIZ_COLORS = [
   "#22d3ee",
   "#38bdf8",
@@ -253,7 +254,7 @@ function parseRichSegments(content: string): RichSegment[] {
 
   for (const match of content.matchAll(BLOCK_PATTERN)) {
     const fullMatch = match[0];
-    const language = match[1] as "viz-chart" | "viz-3d";
+    const language = (match[1] ?? "").toLowerCase();
     const body = match[2] ?? "";
     const matchIndex = match.index ?? 0;
 
@@ -268,11 +269,63 @@ function parseRichSegments(content: string): RichSegment[] {
       }
     }
 
-    segments.push({
-      type: language,
-      content: body.trim(),
-      key: `${language}-${blockIndex}`,
-    });
+    const trimmedBody = body.trim();
+
+    if (language === "viz-chart" || language === "viz-3d") {
+      segments.push({
+        type: language,
+        content: trimmedBody,
+        key: `${language}-${blockIndex}`,
+      });
+    } else if (language === "json" || language === "js" || language === "javascript") {
+      // Some model outputs wrap chart specs in ```json fences; auto-detect and render.
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(trimmedBody);
+      } catch {
+        parsed = null;
+      }
+
+      if (isRecord(parsed)) {
+        const chartType = asString(parsed.type)?.toLowerCase();
+        const hasChartData = Array.isArray(parsed.data);
+        const has3DPoints = Array.isArray(parsed.points);
+
+        if (chartType && ["bar", "line", "area", "pie", "donut", "scatter"].includes(chartType) && hasChartData) {
+          segments.push({
+            type: "viz-chart",
+            content: trimmedBody,
+            key: `viz-chart-${blockIndex}`,
+          });
+        } else if (has3DPoints) {
+          segments.push({
+            type: "viz-3d",
+            content: trimmedBody,
+            key: `viz-3d-${blockIndex}`,
+          });
+        } else {
+          // Preserve unknown JSON blocks as markdown code fences.
+          segments.push({
+            type: "markdown",
+            content: fullMatch,
+            key: `md-code-${blockIndex}`,
+          });
+        }
+      } else {
+        segments.push({
+          type: "markdown",
+          content: fullMatch,
+          key: `md-code-${blockIndex}`,
+        });
+      }
+    } else {
+      // Preserve non-viz fenced code blocks in markdown output.
+      segments.push({
+        type: "markdown",
+        content: fullMatch,
+        key: `md-code-${blockIndex}`,
+      });
+    }
 
     lastIndex = matchIndex + fullMatch.length;
     blockIndex += 1;
@@ -291,24 +344,151 @@ function parseRichSegments(content: string): RichSegment[] {
     : [{ type: "markdown", content, key: "md-full" }];
 }
 
-function parseChartSpec(source: string): ParseResult<VizChartSpec> {
+function parseStructuredObject(
+  source: string,
+  language: "viz-chart" | "viz-3d"
+): ParseResult<Record<string, unknown>> {
   let parsed: unknown;
 
   try {
     parsed = JSON.parse(source);
   } catch {
-    return {
-      ok: false,
-      error: "Invalid JSON inside viz-chart block.",
-    };
+    try {
+      parsed = parseYaml(source);
+    } catch {
+      return {
+        ok: false,
+        error: `Invalid ${language} payload. Expected JSON or YAML object.`,
+      };
+    }
   }
 
   if (!isRecord(parsed)) {
     return {
       ok: false,
-      error: "viz-chart block must be a JSON object.",
+      error: `${language} block must be an object.`,
     };
   }
+
+  return {
+    ok: true,
+    value: parsed,
+  };
+}
+
+function coerceScalar(value: unknown): string | number | undefined {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (trimmed.length === 0) {
+      return undefined;
+    }
+
+    const numeric = Number(trimmed.replace(/,/g, ""));
+    if (Number.isFinite(numeric)) {
+      return numeric;
+    }
+    return trimmed;
+  }
+
+  return undefined;
+}
+
+function normalizeChartData(
+  parsed: Record<string, unknown>,
+  type: VizChartSpec["type"],
+  xKey: string | undefined,
+  yKey: string | undefined,
+  nameKey: string | undefined,
+  valueKey: string | undefined
+): Array<Record<string, string | number>> {
+  const directData = Array.isArray(parsed.data)
+    ? parsed.data
+        .filter(isRecord)
+        .map((item) => {
+          const row: Record<string, string | number> = {};
+          for (const [key, value] of Object.entries(item)) {
+            const scalar = coerceScalar(value);
+            if (scalar !== undefined) {
+              row[key] = scalar;
+            }
+          }
+          return row;
+        })
+        .filter((row) => Object.keys(row).length > 0)
+    : [];
+
+  if (directData.length > 0) {
+    return directData;
+  }
+
+  // YAML-style map under data:
+  // data:
+  //   Furniture: 650000
+  //   Office Supplies: 850000
+  if (isRecord(parsed.data)) {
+    const rows: Array<Record<string, string | number>> = [];
+    const x = xKey ?? "x";
+    const y = yKey ?? "value";
+    const n = nameKey ?? "name";
+    const v = valueKey ?? "value";
+
+    for (const [key, rawValue] of Object.entries(parsed.data)) {
+      const scalar = coerceScalar(rawValue);
+      if (scalar === undefined) {
+        continue;
+      }
+
+      if (type === "pie" || type === "donut") {
+        rows.push({ [n]: key, [v]: scalar });
+      } else {
+        rows.push({ [x]: key, [y]: scalar });
+      }
+    }
+
+    if (rows.length > 0) {
+      return rows;
+    }
+  }
+
+  // YAML-style labels/values arrays:
+  // labels: [East, West]
+  // values: [120000, 90000]
+  const rawLabels = parsed.labels;
+  const rawValues = parsed.values;
+  if (Array.isArray(rawLabels) && Array.isArray(rawValues) && rawLabels.length > 0 && rawValues.length > 0) {
+    const rows: Array<Record<string, string | number>> = [];
+    const n = nameKey ?? "name";
+    const v = valueKey ?? "value";
+    const length = Math.min(rawLabels.length, rawValues.length);
+
+    for (let index = 0; index < length; index += 1) {
+      const label = coerceScalar(rawLabels[index]);
+      const value = coerceScalar(rawValues[index]);
+      if (label === undefined || value === undefined) {
+        continue;
+      }
+      rows.push({ [n]: String(label), [v]: value });
+    }
+
+    if (rows.length > 0) {
+      return rows;
+    }
+  }
+
+  return [];
+}
+
+function parseChartSpec(source: string): ParseResult<VizChartSpec> {
+  const parsedResult = parseStructuredObject(source, "viz-chart");
+  if (parsedResult.ok === false) {
+    return parsedResult;
+  }
+
+  const parsed = parsedResult.value;
 
   const type = asString(parsed.type)?.toLowerCase();
   if (!type || !["bar", "line", "area", "pie", "donut", "scatter"].includes(type)) {
@@ -318,14 +498,33 @@ function parseChartSpec(source: string): ParseResult<VizChartSpec> {
     };
   }
 
-  const data = Array.isArray(parsed.data)
-    ? parsed.data.filter(isRecord).map((item) => item as Record<string, string | number>)
-    : [];
+  const xKey = asString(parsed.xKey) ?? asString(parsed.x);
+  const yKey = asString(parsed.yKey) ?? asString(parsed.y);
+  const labelOrNameKey = asString(parsed.nameKey) ?? asString(parsed.labelKey);
+  const nameKey = labelOrNameKey ?? asString(parsed.name);
+  const valueKey = asString(parsed.valueKey) ?? asString(parsed.value);
+
+  let data = normalizeChartData(
+    parsed,
+    type as VizChartSpec["type"],
+    xKey,
+    yKey,
+    nameKey,
+    valueKey
+  );
+
+  let finalNameKey = nameKey;
+  let finalValueKey = valueKey;
+  if ((type === "pie" || type === "donut") && data.length > 0) {
+    const first = data[0];
+    finalNameKey = finalNameKey ?? (Object.keys(first).find((key) => typeof first[key] === "string") ?? "name");
+    finalValueKey = finalValueKey ?? (Object.keys(first).find((key) => typeof first[key] === "number") ?? "value");
+  }
 
   if (data.length === 0) {
     return {
       ok: false,
-      error: "viz-chart.data must contain at least one row.",
+      error: "viz-chart requires data rows (JSON or YAML).",
     };
   }
 
@@ -356,11 +555,11 @@ function parseChartSpec(source: string): ParseResult<VizChartSpec> {
       description: asString(parsed.description),
       insight: asString(parsed.insight),
       data,
-      xKey: asString(parsed.xKey),
-      yKey: asString(parsed.yKey),
-      nameKey: asString(parsed.nameKey) ?? asString(parsed.labelKey),
+      xKey,
+      yKey,
+      nameKey: finalNameKey,
       labelKey: asString(parsed.labelKey),
-      valueKey: asString(parsed.valueKey),
+      valueKey: finalValueKey,
       series,
       height: asNumber(parsed.height),
     },
@@ -368,23 +567,12 @@ function parseChartSpec(source: string): ParseResult<VizChartSpec> {
 }
 
 function parse3DSpec(source: string): ParseResult<Viz3DSpec> {
-  let parsed: unknown;
-
-  try {
-    parsed = JSON.parse(source);
-  } catch {
-    return {
-      ok: false,
-      error: "Invalid JSON inside viz-3d block.",
-    };
+  const parsedResult = parseStructuredObject(source, "viz-3d");
+  if (parsedResult.ok === false) {
+    return parsedResult;
   }
 
-  if (!isRecord(parsed)) {
-    return {
-      ok: false,
-      error: "viz-3d block must be a JSON object.",
-    };
-  }
+  const parsed = parsedResult.value;
 
   const rawPoints = Array.isArray(parsed.points)
     ? parsed.points.filter(isRecord)

@@ -10,16 +10,12 @@ import { cn } from "@/lib/utils";
 import { MessageSquareMoreIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { type ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-
-type SavedReport = {
-  id: string;
-  messageId: string;
-  content: string;
-  title: string;
-  savedAt: string;
-  sessionId?: string;
-  datasetName?: string;
-};
+import {
+  downloadReportPdf,
+  extractTitle,
+  type SavedReport,
+  SAVED_REPORTS_KEY,
+} from "@/lib/report-pdf";
 
 type ChatSessionListItem = {
   session_id: string;
@@ -500,11 +496,47 @@ export default function ChatWorkspace() {
   }, [createSession, fetchSessionById, fetchSessions]);
 
   function saveReport(message: DashboardChatMessage): void {
-    throw new Error("Function not implemented.");
+    try {
+      const existing = JSON.parse(
+        localStorage.getItem(SAVED_REPORTS_KEY) ?? "[]"
+      ) as SavedReport[];
+      const alreadySaved = existing.some((r) => r.messageId === message.id);
+      if (alreadySaved) {
+        toast.info("Already saved to library.");
+        return;
+      }
+      const report: SavedReport = {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        messageId: message.id,
+        content: message.content,
+        title: extractTitle(message.content),
+        savedAt: new Date().toISOString(),
+        sessionId: activeSessionId ?? undefined,
+        datasetName: activeSession?.dataset_name || undefined,
+      };
+      localStorage.setItem(SAVED_REPORTS_KEY, JSON.stringify([report, ...existing]));
+      toast.success("Saved to library.");
+    } catch {
+      toast.error("Could not save report.");
+    }
   }
 
   function downloadPdf(message: DashboardChatMessage): void {
-    throw new Error("Function not implemented.");
+    const report: SavedReport = {
+      id: `${Date.now()}`,
+      messageId: message.id,
+      content: message.content,
+      title: extractTitle(message.content),
+      savedAt: new Date().toISOString(),
+      sessionId: activeSessionId ?? undefined,
+      datasetName: activeSession?.dataset_name || undefined,
+    };
+    const result = downloadReportPdf(report);
+    if (result.ok) {
+      toast.success("PDF downloaded.");
+    } else {
+      toast.error("Could not generate PDF. Please try again.");
+    }
   }
 
   const downloadArtifact = useCallback(
