@@ -16,6 +16,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { cn } from "@/lib/utils"
+import { useTheme } from "@/components/theme-provider"
 import { CommandIcon, MessageSquareTextIcon, BarChart3Icon, MessagesSquareIcon, DatabaseIcon, BrainCircuitIcon, LineChartIcon, LightbulbIcon, ClipboardListIcon, ArrowLeftIcon } from "lucide-react"
 
 const navItems = [
@@ -88,6 +89,8 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
 
 export function AppSidebar({ user, ...props }: AppSidebarProps) {
   const pathname = usePathname()
+  const { theme } = useTheme()
+  const d = theme !== 'light' // isDark shorthand
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>
@@ -99,7 +102,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
             <SidebarMenuButton
               asChild
               size="lg"
-              className="h-auto cursor-pointer rounded-xl px-3 py-2.5 hover:bg-white/5"
+              className={cn("h-auto cursor-pointer rounded-xl px-3 py-2.5", d ? "hover:bg-white/5" : "hover:bg-black/5")}
             >
               <Link href="/dashboard" className="flex items-center gap-3">
                 {/* Icon with glow ring */}
@@ -110,7 +113,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
                   </div>
                 </div>
                 <div className="flex min-w-0 flex-col">
-                  <span className="text-[15px] font-semibold tracking-tight text-white">
+                  <span className={cn("text-[15px] font-semibold tracking-tight", d ? "text-white" : "text-slate-900")}>
                     InsightForge
                   </span>
                 </div>
@@ -120,11 +123,16 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
         </SidebarMenu>
 
         {/* Separator with gradient */}
-        <div className="mt-2 h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent" />
+        <div className={cn("mt-2 h-px w-full bg-gradient-to-r from-transparent to-transparent", d ? "via-white/12" : "via-slate-900/10")} />
 
         <Link
           href="/"
-          className="mt-3 inline-flex items-center gap-2 rounded-lg border border-white/12 bg-white/[0.03] px-3 py-2 text-xs text-white/70 transition hover:bg-white/[0.08] hover:text-white"
+          className={cn(
+            "mt-3 inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs transition",
+            d
+              ? "border border-white/12 bg-white/[0.03] text-white/70 hover:bg-white/[0.08] hover:text-white"
+              : "border border-slate-200 bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800"
+          )}
         >
           <ArrowLeftIcon className="size-3.5" />
           Back to Landing Page
@@ -135,7 +143,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
       <SidebarContent className="px-3 pt-2">
         <SidebarGroup className="p-0">
           {/* Section label */}
-          <p className="mb-2 px-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/28">
+          <p className={cn("mb-2 px-1 text-[10px] font-semibold uppercase tracking-[0.22em]", d ? "text-white/28" : "text-slate-400")}>
             Workspace
           </p>
 
@@ -151,18 +159,26 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
                       asChild
                       isActive={isActive}
                       className={cn(
-                        // Base
                         "group/nav h-auto cursor-pointer gap-3 rounded-xl px-3 py-2.5 transition-all duration-200",
-                        // Default text
-                        "text-sidebar-foreground/60 hover:text-white",
-                        // Hover bg
-                        "hover:bg-white/[0.06]",
-                        // Active overrides
-                        isActive && [
-                          "bg-gradient-to-r from-cyan-400/[0.13] via-cyan-400/[0.06] to-transparent",
-                          "text-white shadow-[inset_2px_0_0_rgba(34,211,238,0.65)]",
-                          "hover:bg-gradient-to-r hover:from-cyan-400/[0.16] hover:via-cyan-400/[0.08] hover:to-transparent",
-                        ],
+                        d
+                          ? cn(
+                              "text-sidebar-foreground/60",
+                              "hover:text-white hover:bg-white/[0.06]",
+                              isActive && [
+                                "bg-gradient-to-r from-cyan-400/[0.13] via-cyan-400/[0.06] to-transparent",
+                                "text-white shadow-[inset_2px_0_0_rgba(34,211,238,0.65)]",
+                                "hover:bg-gradient-to-r hover:from-cyan-400/[0.16] hover:via-cyan-400/[0.08] hover:to-transparent",
+                              ]
+                            )
+                          : cn(
+                              "text-slate-500",
+                              "hover:text-slate-900 hover:bg-black/[0.05]",
+                              isActive && [
+                                "bg-gradient-to-r from-cyan-500/[0.12] via-cyan-500/[0.05] to-transparent",
+                                "text-slate-900 shadow-[inset_2px_0_0_rgba(6,182,212,0.65)]",
+                                "hover:bg-gradient-to-r hover:from-cyan-500/[0.16] hover:via-cyan-500/[0.08] hover:to-transparent",
+                              ]
+                            ),
                       )}
                     >
                       <Link href={item.url} className="flex w-full items-center gap-3">
@@ -170,8 +186,10 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
                           className={cn(
                             "flex size-7 shrink-0 items-center justify-center rounded-lg transition-colors duration-200",
                             isActive
-                              ? "bg-cyan-400/15 text-cyan-300"
-                              : "bg-white/5 text-white/40 group-hover/nav:bg-white/8 group-hover/nav:text-white/70"
+                              ? "bg-cyan-400/15 text-cyan-500"
+                              : d
+                              ? "bg-white/5 text-white/40 group-hover/nav:bg-white/8 group-hover/nav:text-white/70"
+                              : "bg-black/5 text-slate-400 group-hover/nav:bg-black/[0.08] group-hover/nav:text-slate-600"
                           )}
                         >
                           <item.icon className="size-3.5" />
@@ -180,7 +198,9 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
                           <span
                             className={cn(
                               "text-[13px] font-medium leading-tight",
-                              isActive ? "text-white" : "text-white/65 group-hover/nav:text-white/85"
+                              isActive
+                                ? d ? "text-white" : "text-slate-900"
+                                : d ? "text-white/65 group-hover/nav:text-white/85" : "text-slate-600 group-hover/nav:text-slate-800"
                             )}
                           >
                             {item.title}
@@ -188,7 +208,9 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
                           <span
                             className={cn(
                               "text-[10px] leading-tight",
-                              isActive ? "text-cyan-300/60" : "text-white/28 group-hover/nav:text-white/40"
+                              isActive
+                                ? "text-cyan-500/70"
+                                : d ? "text-white/28 group-hover/nav:text-white/40" : "text-slate-400 group-hover/nav:text-slate-500"
                             )}
                           >
                             {item.description}
@@ -204,11 +226,11 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
         </SidebarGroup>
 
         {/* Separator */}
-        <div className="my-3 h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        <div className={cn("my-3 h-px w-full bg-gradient-to-r from-transparent to-transparent", d ? "via-white/10" : "via-slate-900/10")} />
 
         {/* ── Active Agents ── */}
         <SidebarGroup className="p-0">
-          <p className="mb-2 px-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/28">
+          <p className={cn("mb-2 px-1 text-[10px] font-semibold uppercase tracking-[0.22em]", d ? "text-white/28" : "text-slate-400")}>
             Active Agents
           </p>
           <SidebarGroupContent>
@@ -222,10 +244,10 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
                     <agent.icon className={cn("size-3", agent.color)} />
                   </div>
                   <div className="flex min-w-0 flex-col">
-                    <span className="text-[12px] font-medium leading-tight text-white/60">
+                    <span className={cn("text-[12px] font-medium leading-tight", d ? "text-white/60" : "text-slate-600")}>
                       {agent.name}
                     </span>
-                    <span className="text-[10px] leading-tight text-white/25">
+                    <span className={cn("text-[10px] leading-tight", d ? "text-white/25" : "text-slate-400")}>
                       {agent.description}
                     </span>
                   </div>
@@ -238,15 +260,15 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
 
         {/* ── Spacer area with subtle decoration ── */}
         <div className="mt-auto flex flex-col items-center justify-center gap-3 py-6 opacity-[0.18]">
-          <div className="h-px w-10 rounded-full bg-white/40" />
-          <CommandIcon className="size-6 text-white/60" />
-          <div className="h-px w-10 rounded-full bg-white/40" />
+          <div className={cn("h-px w-10 rounded-full", d ? "bg-white/40" : "bg-slate-900/40")} />
+          <CommandIcon className={cn("size-6", d ? "text-white/60" : "text-slate-600")} />
+          <div className={cn("h-px w-10 rounded-full", d ? "bg-white/40" : "bg-slate-900/40")} />
         </div>
       </SidebarContent>
 
       {/* ── User footer ── */}
       <SidebarFooter className="px-3 pb-4 pt-0">
-        <div className="mb-3 h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        <div className={cn("mb-3 h-px w-full bg-gradient-to-r from-transparent to-transparent", d ? "via-white/10" : "via-slate-900/10")} />
         <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>

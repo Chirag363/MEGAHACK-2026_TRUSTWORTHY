@@ -739,3 +739,371 @@ Provide each visualization in its appropriate fenced block and include a brief c
 2026-03-14 04:40:41 | INFO | app.api | [request:505d0efc] completed DELETE /api/v1/chat/session/5592edcb-dbf0-4135-84b5-3f4a60dcc20d status=200 duration_ms=1826.76
 2026-03-14 04:40:41 | INFO | app.api | [request:d804448b] started GET /api/v1/chat/sessions
 2026-03-14 04:40:41 | INFO | app.api | [request:d804448b] completed GET /api/v1/chat/sessions status=200 duration_ms=63.28
+2026-03-14 05:13:49 | INFO | app.api | [request:43e93547] started GET /api/v1/chat/sessions
+2026-03-14 05:13:49 | INFO | app.api | [request:b23fb6b7] started GET /api/v1/chat/sessions
+2026-03-14 05:13:49 | INFO | app.api | [request:b23fb6b7] completed GET /api/v1/chat/sessions status=200 duration_ms=23.36
+2026-03-14 05:13:50 | INFO | app.api | [request:7723c586] started GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 05:13:50 | INFO | app.api | [request:7723c586] completed GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e status=200 duration_ms=154.51
+2026-03-14 05:13:50 | INFO | app.api | [request:43e93547] completed GET /api/v1/chat/sessions status=200 duration_ms=293.89
+2026-03-14 05:17:32 | INFO | app.api | [request:cc208b23] started GET /api/v1/chat/sessions
+2026-03-14 05:17:32 | INFO | app.api | [request:cc208b23] completed GET /api/v1/chat/sessions status=200 duration_ms=22.90
+2026-03-14 05:17:32 | INFO | app.api | [request:7022c77f] started GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 05:17:32 | INFO | app.api | [request:7022c77f] completed GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e status=200 duration_ms=11.78
+2026-03-14 05:17:41 | INFO | app.api | [request:a397fbf5] started GET /api/v1/chat/sessions
+2026-03-14 05:17:41 | INFO | app.api | [request:f5555957] started GET /api/v1/chat/sessions
+2026-03-14 05:17:41 | INFO | app.api | [request:a397fbf5] completed GET /api/v1/chat/sessions status=200 duration_ms=25.78
+2026-03-14 05:17:41 | INFO | app.api | [request:f5555957] completed GET /api/v1/chat/sessions status=200 duration_ms=26.74
+2026-03-14 05:17:42 | INFO | app.api | [request:6c1bfa00] started GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 05:17:42 | INFO | app.api | [request:6c1bfa00] completed GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e status=200 duration_ms=14.40
+2026-03-14 05:20:58 | INFO | app.api | [request:4f0724bb] started GET /api/v1/chat/sessions
+2026-03-14 05:20:58 | INFO | app.api | [request:f28db2b3] started GET /api/v1/chat/sessions
+2026-03-14 05:20:58 | INFO | app.api | [request:4f0724bb] completed GET /api/v1/chat/sessions status=200 duration_ms=27.44
+2026-03-14 05:20:58 | INFO | app.api | [request:f28db2b3] completed GET /api/v1/chat/sessions status=200 duration_ms=30.54
+2026-03-14 05:20:58 | INFO | app.api | [request:119d1aef] started GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 05:20:58 | INFO | app.api | [request:119d1aef] completed GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e status=200 duration_ms=21.15
+2026-03-14 05:21:06 | INFO | app.api | [request:0f6f2924] started GET /api/v1/chat/sessions
+2026-03-14 05:21:06 | INFO | app.api | [request:1540e621] started GET /api/v1/chat/sessions
+2026-03-14 05:21:06 | INFO | app.api | [request:0f6f2924] completed GET /api/v1/chat/sessions status=200 duration_ms=25.87
+2026-03-14 05:21:06 | INFO | app.api | [request:1540e621] completed GET /api/v1/chat/sessions status=200 duration_ms=25.19
+2026-03-14 05:21:06 | INFO | app.api | [request:a49a2f68] started GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 05:21:06 | INFO | app.api | [request:a49a2f68] completed GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e status=200 duration_ms=15.09
+2026-03-14 05:22:53 | INFO | app.api | [request:87da5922] started GET /api/v1/chat/sessions
+2026-03-14 05:22:53 | INFO | app.api | [request:87da5922] completed GET /api/v1/chat/sessions status=200 duration_ms=52.93
+2026-03-14 05:22:53 | INFO | app.api | [request:23d12b38] started GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 05:22:53 | INFO | app.api | [request:23d12b38] completed GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e status=200 duration_ms=45.86
+2026-03-14 05:23:14 | INFO | app.api | [request:3d83a65a] started GET /api/v1/chat/sessions
+2026-03-14 05:23:15 | INFO | app.api | [request:3d83a65a] completed GET /api/v1/chat/sessions status=200 duration_ms=32.20
+2026-03-14 05:23:15 | INFO | app.api | [request:106a2b4e] started GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 05:23:15 | INFO | app.api | [request:106a2b4e] completed GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e status=200 duration_ms=10.81
+2026-03-14 05:24:55 | INFO | app.api | [request:2c0afba7] started GET /api/v1/chat/sessions
+2026-03-14 05:24:55 | INFO | app.api | [request:2c0afba7] completed GET /api/v1/chat/sessions status=200 duration_ms=46.81
+2026-03-14 05:24:55 | INFO | app.api | [request:a4dc5b3f] started GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 05:24:55 | INFO | app.api | [request:a4dc5b3f] completed GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e status=200 duration_ms=45.93
+2026-03-14 05:32:47 | INFO | app.api | [request:f9c01b9f] started GET /api/v1/chat/sessions
+2026-03-14 05:32:47 | INFO | app.api | [request:f9c01b9f] completed GET /api/v1/chat/sessions status=200 duration_ms=23.04
+2026-03-14 05:32:47 | INFO | app.api | [request:279e8bb4] started GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 05:32:47 | INFO | app.api | [request:279e8bb4] completed GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e status=200 duration_ms=12.79
+2026-03-14 05:35:16 | INFO | app.api | [request:d5994fc0] started GET /api/v1/chat/sessions
+2026-03-14 05:35:16 | INFO | app.api | [request:f202e706] started GET /api/v1/chat/sessions
+2026-03-14 05:35:16 | INFO | app.api | [request:d5994fc0] completed GET /api/v1/chat/sessions status=200 duration_ms=31.38
+2026-03-14 05:35:16 | INFO | app.api | [request:f202e706] completed GET /api/v1/chat/sessions status=200 duration_ms=15.54
+2026-03-14 05:35:16 | INFO | app.api | [request:84214e38] started GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 05:35:16 | INFO | app.api | [request:84214e38] completed GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e status=200 duration_ms=13.93
+2026-03-14 05:35:56 | INFO | app.api | [request:4a71a4f6] started POST /api/v1/chat/message/stream
+2026-03-14 05:35:56 | INFO | app.api | [run:a558e59fd5] stream request received session_id=e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 05:35:56 | INFO | app.services.analysis_service | [run:a558e59fd5] streaming analysis started
+2026-03-14 05:35:56 | INFO | app.api | [request:4a71a4f6] completed POST /api/v1/chat/message/stream status=200 duration_ms=77.58
+2026-03-14 05:35:56 | INFO | app.services.analysis_service | [run:a558e59fd5] building LLM client provider=gradient model=openai-gpt-oss-120b
+2026-03-14 05:35:56 | INFO | app.services.llm_service | LLMService using DigitalOcean Gradient base=https://inference.do-ai.run/v1/ model=openai-gpt-oss-120b
+2026-03-14 05:35:56 | INFO | app.services.analysis_service | [run:a558e59fd5] dataset tools initialized count=11
+2026-03-14 05:35:56 | INFO | app.services.workflow_service | workflow mode=supervisor workers=['casual_convo_agent', 'data_cleaning_agent', 'feature_analysis_agent', 'insight_generation_agent', 'recommendation_agent', 'visualization_agent']
+2026-03-14 05:35:59 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:35:59 | INFO | app.services.workflow_service | [run:a558e59fd5] supervisor dispatch: Supervisor decision: route to feature_analysis_agent
+Reason: The user asked for a summary of the sales data, which requires statistical analysis of the dataset. The Feature Analysis Agent can compute the required aggregates and patterns. No visualization or casual conversation handling is needed.
+Instruction: Analyze the provided Superstore dataset and generate a concise textual summary of the sales data. Include overall total sales, average sales per order, sales breakdown by Region, top 3 Categories by sales, and any notable patterns in Quantity, Discount, and Profit. Present the summary in clear bullet points.
+2026-03-14 05:35:59 | INFO | app.services.workflow_service | [run:a558e59fd5] agent start: feature_analysis_agent
+2026-03-14 05:36:02 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:36:02 | INFO | app.services.workflow_service | [run:a558e59fd5] agent tool call: feature_analysis_agent -> distinct_values
+2026-03-14 05:36:04 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:36:04 | INFO | app.services.workflow_service | [run:a558e59fd5] agent tool call: feature_analysis_agent -> summary_statistics
+2026-03-14 05:36:05 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:36:05 | INFO | app.services.workflow_service | [run:a558e59fd5] agent tool call: feature_analysis_agent -> aggregate_data
+2026-03-14 05:36:12 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:36:12 | INFO | app.services.workflow_service | [run:a558e59fd5] agent tool call: feature_analysis_agent -> aggregate_data
+2026-03-14 05:36:14 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:36:14 | INFO | app.services.workflow_service | [run:a558e59fd5] agent tool call: feature_analysis_agent -> distinct_values
+2026-03-14 05:36:19 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:36:19 | INFO | app.services.workflow_service | [run:a558e59fd5] agent complete: feature_analysis_agent output_chars=1775
+2026-03-14 05:36:19 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:36:23 | INFO | app.services.workflow_service | [run:a558e59fd5] supervisor finalized report
+2026-03-14 05:36:23 | INFO | app.services.analysis_service | [run:a558e59fd5] streaming analysis finished in 26976.07 ms
+2026-03-14 05:36:23 | INFO | app.api | [run:a558e59fd5] stream workflow completed reply_chars=3649
+2026-03-14 05:36:23 | INFO | app.api | [request:6cb902bd] started GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 05:36:23 | INFO | app.api | [request:6cb902bd] completed GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e status=200 duration_ms=11.37
+2026-03-14 05:36:23 | INFO | app.api | [request:6e66cb62] started GET /api/v1/chat/sessions
+2026-03-14 05:36:23 | INFO | app.api | [request:6e66cb62] completed GET /api/v1/chat/sessions status=200 duration_ms=17.24
+2026-03-14 05:37:37 | INFO | app.api | [request:b3e29596] started POST /api/v1/chat/message/stream
+2026-03-14 05:37:37 | INFO | app.api | [run:20669aefa4] stream request received session_id=e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 05:37:37 | INFO | app.services.analysis_service | [run:20669aefa4] streaming analysis started
+2026-03-14 05:37:37 | INFO | app.api | [request:b3e29596] completed POST /api/v1/chat/message/stream status=200 duration_ms=47.19
+2026-03-14 05:37:37 | INFO | app.services.analysis_service | [run:20669aefa4] building LLM client provider=gradient model=openai-gpt-oss-120b
+2026-03-14 05:37:37 | INFO | app.services.llm_service | LLMService using DigitalOcean Gradient base=https://inference.do-ai.run/v1/ model=openai-gpt-oss-120b
+2026-03-14 05:37:37 | INFO | app.services.analysis_service | [run:20669aefa4] dataset tools initialized count=11
+2026-03-14 05:37:37 | INFO | app.services.workflow_service | workflow mode=supervisor workers=['casual_convo_agent', 'data_cleaning_agent', 'feature_analysis_agent', 'insight_generation_agent', 'recommendation_agent', 'visualization_agent']
+2026-03-14 05:37:40 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:37:40 | INFO | app.services.workflow_service | [run:20669aefa4] supervisor dispatch: Supervisor decision: route to data_cleaning_agent
+Reason: The user requested a full business intelligence report, which requires first ensuring the dataset is clean before proceeding to feature analysis, insight generation, recommendations, and visualizations.
+Instruction: Examine the Superstore dataset for data quality issues: missing or malformed values, inconsistent date formats, duplicate rows, outliers in numeric fields (Sales, Quantity, Discount, Profit), and any categorical inconsistencies. Produce a concise report outlining detected issues and suggested cleaning actions (e.g., impute missing Postal Code, standardize date formats, handle negative profit rows).
+2026-03-14 05:37:40 | INFO | app.services.workflow_service | [run:20669aefa4] agent start: data_cleaning_agent
+2026-03-14 05:37:41 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:37:41 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: data_cleaning_agent -> missing_values_report
+2026-03-14 05:37:43 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:37:43 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: data_cleaning_agent -> summary_statistics
+2026-03-14 05:37:44 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:37:44 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: data_cleaning_agent -> distinct_values
+2026-03-14 05:37:44 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:37:44 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: data_cleaning_agent -> sample_rows
+2026-03-14 05:37:45 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:37:45 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: data_cleaning_agent -> outlier_report_iqr
+2026-03-14 05:37:46 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:37:46 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: data_cleaning_agent -> aggregate_data
+2026-03-14 05:37:46 | INFO | app.services.workflow_service | [run:20669aefa4] agent complete: data_cleaning_agent output_chars=52
+2026-03-14 05:37:49 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:37:49 | INFO | app.services.workflow_service | [run:20669aefa4] supervisor dispatch: Supervisor decision: route to feature_analysis_agent
+Reason: The user requested a full BI report, which requires core data analysis before generating insights, recommendations, and visualizations. Starting with feature_analysis_agent provides the necessary quantitative foundation for subsequent agents.
+Instruction: Perform a comprehensive feature analysis on the 'Sample - Superstore.csv' dataset. Provide descriptive statistics for numeric fields (Sales, Quantity, Discount, Profit), summarize categorical dimensions (Category, Sub-Category, Region, Segment, State), compute temporal trends by Order Date (monthly/quarterly sales, profit, quantity), identify top 10 products and customers by sales, and highlight any notable distributions or outliers. Return the analysis results in structured JSON.
+2026-03-14 05:37:49 | INFO | app.services.workflow_service | [run:20669aefa4] agent start: feature_analysis_agent
+2026-03-14 05:37:49 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:37:49 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: feature_analysis_agent -> summary_statistics
+2026-03-14 05:37:51 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:37:51 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: feature_analysis_agent -> distinct_values
+2026-03-14 05:37:52 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:37:52 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: feature_analysis_agent -> distinct_values
+2026-03-14 05:37:53 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:37:53 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: feature_analysis_agent -> distinct_values
+2026-03-14 05:37:54 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:37:54 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: feature_analysis_agent -> distinct_values
+2026-03-14 05:37:55 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:37:55 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: feature_analysis_agent -> time_series_aggregate
+2026-03-14 05:37:56 | INFO | app.services.workflow_service | [run:20669aefa4] agent complete: feature_analysis_agent output_chars=52
+2026-03-14 05:37:58 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:37:58 | INFO | app.services.workflow_service | [run:20669aefa4] supervisor dispatch: Supervisor decision: route to insight_generation_agent
+Reason: The user requested a full BI report, which requires synthesized insights, actionable recommendations, and visualizations. Insight generation is the logical next step before recommendations and visual artifacts.
+Instruction: Using the partial outputs from data_cleaning_agent and feature_analysis_agent, generate a concise set of business insights covering sales performance, profit margins, regional trends, product category contributions, discount impact, and any notable anomalies. Structure the insights as bullet points with brief quantitative support (e.g., totals, percentages, top‑/bottom‑ranked items).
+2026-03-14 05:37:58 | INFO | app.services.workflow_service | [run:20669aefa4] agent start: insight_generation_agent
+2026-03-14 05:37:58 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:37:58 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: insight_generation_agent -> dataset_schema
+2026-03-14 05:37:59 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:37:59 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: insight_generation_agent -> summary_statistics
+2026-03-14 05:38:00 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:38:00 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: insight_generation_agent -> aggregate_data
+2026-03-14 05:38:01 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:38:01 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: insight_generation_agent -> aggregate_data
+2026-03-14 05:38:02 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:38:02 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: insight_generation_agent -> aggregate_data
+2026-03-14 05:38:02 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:38:02 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: insight_generation_agent -> aggregate_data
+2026-03-14 05:38:02 | INFO | app.services.workflow_service | [run:20669aefa4] agent complete: insight_generation_agent output_chars=52
+2026-03-14 05:38:06 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:38:06 | INFO | app.services.workflow_service | [run:20669aefa4] supervisor dispatch: Supervisor decision: route to visualization_agent
+Reason: A complete BI report requires reliable data. The previous data cleaning output was partial, so we must first obtain a full data quality assessment before proceeding with feature analysis, insight generation, visualizations, and recommendations.
+Instruction: Perform a thorough data quality assessment on the 'Sample - Superstore.csv' dataset. Identify missing values, inconsistent formats (e.g., dates, postal codes), duplicate records, outliers in numeric columns (Sales, Quantity, Discount, Profit), and any logical inconsistencies (e.g., negative profit where it shouldn't be). Provide a concise summary of findings and concrete cleaning actions (e.g., fill, standardize, remove duplicates, handle outliers).
+2026-03-14 05:38:06 | INFO | app.services.workflow_service | [run:20669aefa4] agent start: visualization_agent
+2026-03-14 05:38:07 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:38:07 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: visualization_agent -> missing_values_report
+2026-03-14 05:38:08 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:38:08 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: visualization_agent -> aggregate_data
+2026-03-14 05:38:09 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:38:09 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: visualization_agent -> outlier_report_iqr
+2026-03-14 05:38:11 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:38:11 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: visualization_agent -> distinct_values
+2026-03-14 05:38:13 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:38:13 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: visualization_agent -> aggregate_data
+2026-03-14 05:38:15 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:38:15 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: visualization_agent -> aggregate_data
+2026-03-14 05:38:15 | INFO | app.services.workflow_service | [run:20669aefa4] agent complete: visualization_agent output_chars=52
+2026-03-14 05:38:18 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:38:18 | INFO | app.services.workflow_service | [run:20669aefa4] supervisor dispatch: Supervisor decision: route to recommendation_agent
+Reason: The user requested a full BI report. All preliminary analysis agents have run but returned only partial results. The remaining step is to synthesize those results into a complete report and provide actionable recommendations, which is the responsibility of the recommendation_agent.
+Instruction: Using the partial outputs already produced by data_cleaning_agent, feature_analysis_agent, insight_generation_agent, and visualization_agent, create a comprehensive Business Intelligence report for the Superstore dataset. The report should be structured in clear Markdown sections:
+1. Executive Summary – high‑level overview of findings.
+2. Data Overview – brief description of the dataset (rows, columns, key fields, any data quality notes from cleaning).
+3. Key Metrics – total sales, profit, quantity, average discount, etc., with any notable trends (e.g., by region, segment, category).
+4. Visualizations – list the recommended visual artifacts (bar chart, donut chart, line/area graph, flow diagram) with concise titles and what each visual would illustrate. Use fenced `viz-chart` blocks to describe the chart specifications (type, axes, filters).
+5. Insights – synthesize patterns identified by the insight generation step (top‑performing categories, profit drivers, loss makers, seasonality, discount impact, etc.).
+6. Recommendations – actionable business recommendations derived from the insights (e.g., focus on high‑margin categories, adjust discount strategy, regional inventory shifts, marketing focus).
+7. Conclusion – recap and next steps.
+Make sure the report is cohesive, reads like a finished business report, and references the visualizations and insights appropriately. Do not generate any actual image files; only describe them in the specified fenced blocks.
+2026-03-14 05:38:18 | INFO | app.services.workflow_service | [run:20669aefa4] agent start: recommendation_agent
+2026-03-14 05:38:19 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:38:19 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: recommendation_agent -> dataset_schema
+2026-03-14 05:38:20 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:38:20 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: recommendation_agent -> summary_statistics
+2026-03-14 05:38:21 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:38:21 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: recommendation_agent -> aggregate_data
+2026-03-14 05:38:21 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:38:21 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: recommendation_agent -> aggregate_data
+2026-03-14 05:38:22 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:38:22 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: recommendation_agent -> aggregate_data
+2026-03-14 05:38:24 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:38:24 | INFO | app.services.workflow_service | [run:20669aefa4] agent tool call: recommendation_agent -> aggregate_data
+2026-03-14 05:38:24 | INFO | app.services.workflow_service | [run:20669aefa4] agent complete: recommendation_agent output_chars=52
+2026-03-14 05:38:25 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:38:33 | INFO | app.services.workflow_service | [run:20669aefa4] supervisor finalized report
+2026-03-14 05:38:33 | INFO | app.services.analysis_service | [run:20669aefa4] streaming analysis finished in 56081.33 ms
+2026-03-14 05:38:33 | INFO | app.api | [run:20669aefa4] stream workflow completed reply_chars=5630
+2026-03-14 05:38:34 | INFO | app.api | [request:8693ada8] started GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 05:38:34 | INFO | app.api | [request:8693ada8] completed GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e status=200 duration_ms=16.08
+2026-03-14 05:38:34 | INFO | app.api | [request:c60d711c] started GET /api/v1/chat/sessions
+2026-03-14 05:38:34 | INFO | app.api | [request:c60d711c] completed GET /api/v1/chat/sessions status=200 duration_ms=15.78
+2026-03-14 05:42:38 | INFO | app.api | [request:55d0a6fc] started GET /api/v1/chat/sessions
+2026-03-14 05:42:38 | INFO | app.api | [request:56781aa8] started GET /api/v1/chat/sessions
+2026-03-14 05:42:38 | INFO | app.api | [request:55d0a6fc] completed GET /api/v1/chat/sessions status=200 duration_ms=39.32
+2026-03-14 05:42:38 | INFO | app.api | [request:56781aa8] completed GET /api/v1/chat/sessions status=200 duration_ms=36.39
+2026-03-14 05:42:38 | INFO | app.api | [request:db411285] started GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 05:42:38 | INFO | app.api | [request:db411285] completed GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e status=200 duration_ms=10.88
+2026-03-14 05:42:45 | INFO | app.api | [request:9d4b57ef] started GET /api/v1/chat/sessions
+2026-03-14 05:42:45 | INFO | app.api | [request:7f0418a1] started GET /api/v1/chat/sessions
+2026-03-14 05:42:45 | INFO | app.api | [request:9d4b57ef] completed GET /api/v1/chat/sessions status=200 duration_ms=22.00
+2026-03-14 05:42:45 | INFO | app.api | [request:7f0418a1] completed GET /api/v1/chat/sessions status=200 duration_ms=23.08
+2026-03-14 05:42:45 | INFO | app.api | [request:9d49b701] started GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 05:42:45 | INFO | app.api | [request:9d49b701] completed GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e status=200 duration_ms=11.92
+2026-03-14 05:43:36 | INFO | app.api | [request:b5297256] started POST /api/v1/chat/message/stream
+2026-03-14 05:43:36 | INFO | app.api | [run:6dc2397aeb] stream request received session_id=e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 05:43:36 | INFO | app.services.analysis_service | [run:6dc2397aeb] streaming analysis started
+2026-03-14 05:43:36 | INFO | app.api | [request:b5297256] completed POST /api/v1/chat/message/stream status=200 duration_ms=41.74
+2026-03-14 05:43:36 | INFO | app.services.analysis_service | [run:6dc2397aeb] building LLM client provider=gradient model=openai-gpt-oss-120b
+2026-03-14 05:43:36 | INFO | app.services.llm_service | LLMService using DigitalOcean Gradient base=https://inference.do-ai.run/v1/ model=openai-gpt-oss-120b
+2026-03-14 05:43:36 | INFO | app.services.analysis_service | [run:6dc2397aeb] dataset tools initialized count=11
+2026-03-14 05:43:36 | INFO | app.services.workflow_service | workflow mode=supervisor workers=['casual_convo_agent', 'data_cleaning_agent', 'feature_analysis_agent', 'insight_generation_agent', 'recommendation_agent', 'visualization_agent']
+2026-03-14 05:43:39 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:43:39 | INFO | app.services.workflow_service | [run:6dc2397aeb] supervisor dispatch: Supervisor decision: route to visualization_agent
+Reason: The user requests bar chart, donut chart, and a flow diagram based on the Superstore dataset. Only the visualization_agent is needed to produce the specified visual outputs; no other analysis agents are required at this stage.
+Instruction: Using the provided 'Sample - Superstore.csv' dataset, generate the following visual artifacts:
+1. **Bar Chart**: Total Sales aggregated by *Category* (Furniture, Office Supplies, Technology). Use a `viz-chart` block.
+2. **Donut Chart**: Percentage contribution of Sales by *Region* (South, West, Central, East). Use a `viz-chart` block with donut/pie type.
+3. **Flow Diagram**: A high‑level order fulfillment flow illustrating the steps from Order Placement to Shipping to Delivery. Use a Mermaid `flowchart` inside a fenced `mermaid` block.
+Provide each visualization in its own fenced block (no image files). Include brief titles/captions within the blocks for clarity.
+2026-03-14 05:43:39 | INFO | app.services.workflow_service | [run:6dc2397aeb] agent start: visualization_agent
+2026-03-14 05:43:40 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:43:40 | INFO | app.services.workflow_service | [run:6dc2397aeb] agent tool call: visualization_agent -> aggregate_data
+2026-03-14 05:43:41 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:43:41 | INFO | app.services.workflow_service | [run:6dc2397aeb] agent tool call: visualization_agent -> aggregate_data
+2026-03-14 05:43:44 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:43:44 | INFO | app.services.workflow_service | [run:6dc2397aeb] agent complete: visualization_agent output_chars=1782
+2026-03-14 05:43:44 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:43:49 | INFO | app.services.workflow_service | [run:6dc2397aeb] supervisor finalized report
+2026-03-14 05:43:49 | INFO | app.services.analysis_service | [run:6dc2397aeb] streaming analysis finished in 12709.96 ms
+2026-03-14 05:43:49 | INFO | app.api | [run:6dc2397aeb] stream workflow completed reply_chars=4374
+2026-03-14 05:43:49 | INFO | app.api | [request:f0295bcc] started GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 05:43:49 | INFO | app.api | [request:f0295bcc] completed GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e status=200 duration_ms=11.14
+2026-03-14 05:43:49 | INFO | app.api | [request:15b6d6a9] started GET /api/v1/chat/sessions
+2026-03-14 05:43:49 | INFO | app.api | [request:15b6d6a9] completed GET /api/v1/chat/sessions status=200 duration_ms=12.84
+2026-03-14 05:47:01 | INFO | app.api | [request:c511340d] started GET /api/v1/chat/sessions
+2026-03-14 05:47:01 | INFO | app.api | [request:c511340d] completed GET /api/v1/chat/sessions status=200 duration_ms=24.46
+2026-03-14 05:47:02 | INFO | app.api | [request:94347bbe] started GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 05:47:02 | INFO | app.api | [request:94347bbe] completed GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e status=200 duration_ms=15.03
+2026-03-14 05:48:16 | INFO | app.api | [request:363ac64f] started POST /api/v1/chat/message/stream
+2026-03-14 05:48:16 | INFO | app.api | [run:d2cd271603] stream request received session_id=e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 05:48:16 | INFO | app.services.analysis_service | [run:d2cd271603] streaming analysis started
+2026-03-14 05:48:16 | INFO | app.api | [request:363ac64f] completed POST /api/v1/chat/message/stream status=200 duration_ms=53.63
+2026-03-14 05:48:16 | INFO | app.services.analysis_service | [run:d2cd271603] building LLM client provider=gradient model=openai-gpt-oss-120b
+2026-03-14 05:48:16 | INFO | app.services.llm_service | LLMService using DigitalOcean Gradient base=https://inference.do-ai.run/v1/ model=openai-gpt-oss-120b
+2026-03-14 05:48:16 | INFO | app.services.analysis_service | [run:d2cd271603] dataset tools initialized count=11
+2026-03-14 05:48:16 | INFO | app.services.workflow_service | workflow mode=supervisor workers=['casual_convo_agent', 'data_cleaning_agent', 'feature_analysis_agent', 'insight_generation_agent', 'recommendation_agent', 'visualization_agent']
+2026-03-14 05:48:19 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:19 | INFO | app.services.workflow_service | [run:d2cd271603] supervisor dispatch: Supervisor decision: route to data_cleaning_agent
+Reason: The user requests profit‑focused insights. Accurate insights require a clean dataset, so we start with data cleaning before proceeding to feature analysis, insight generation, and actionable recommendations.
+Instruction: Load the 'Sample - Superstore.csv' dataset. Perform a data quality assessment: check for missing values, inconsistent date formats, incorrect data types, duplicate rows, and any out‑of‑range or anomalous numeric values (e.g., negative sales). Produce a concise report listing identified issues and propose specific cleaning actions (e.g., impute/fill missing values, standardize date formats, correct data types, remove or flag duplicates, handle negative/erroneous profit values).
+2026-03-14 05:48:19 | INFO | app.services.workflow_service | [run:d2cd271603] agent start: data_cleaning_agent
+2026-03-14 05:48:21 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:21 | INFO | app.services.workflow_service | [run:d2cd271603] agent tool call: data_cleaning_agent -> missing_values_report
+2026-03-14 05:48:21 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:21 | INFO | app.services.workflow_service | [run:d2cd271603] agent tool call: data_cleaning_agent -> sample_rows
+2026-03-14 05:48:22 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:22 | INFO | app.services.workflow_service | [run:d2cd271603] agent tool call: data_cleaning_agent -> aggregate_data
+2026-03-14 05:48:23 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:23 | INFO | app.services.workflow_service | [run:d2cd271603] agent tool call: data_cleaning_agent -> distinct_values
+2026-03-14 05:48:24 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:24 | INFO | app.services.workflow_service | [run:d2cd271603] agent tool call: data_cleaning_agent -> summary_statistics
+2026-03-14 05:48:26 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:26 | INFO | app.services.workflow_service | [run:d2cd271603] agent tool call: data_cleaning_agent -> outlier_report_iqr
+2026-03-14 05:48:27 | INFO | app.services.workflow_service | [run:d2cd271603] agent complete: data_cleaning_agent output_chars=52
+2026-03-14 05:48:28 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:28 | INFO | app.services.workflow_service | [run:d2cd271603] supervisor dispatch: Supervisor decision: route to feature_analysis_agent
+Reason: The user requests profit‑focused insights. We must first understand how each feature relates to profit before synthesizing insights and recommendations.
+Instruction: Perform a detailed feature analysis on the provided Superstore dataset. Focus on variables that impact profit such as Sales, Discount, Quantity, Category, Sub-Category, Region, Segment, and any temporal patterns (Order Date, Ship Date). Identify statistical summaries, correlations, distributions, and any notable patterns or anomalies that could explain profit variability.
+2026-03-14 05:48:28 | INFO | app.services.workflow_service | [run:d2cd271603] agent start: feature_analysis_agent
+2026-03-14 05:48:29 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:29 | INFO | app.services.workflow_service | [run:d2cd271603] agent tool call: feature_analysis_agent -> summary_statistics
+2026-03-14 05:48:30 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:30 | INFO | app.services.workflow_service | [run:d2cd271603] agent tool call: feature_analysis_agent -> correlation_report
+2026-03-14 05:48:32 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:32 | INFO | app.services.workflow_service | [run:d2cd271603] agent tool call: feature_analysis_agent -> aggregate_data
+2026-03-14 05:48:33 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:33 | INFO | app.services.workflow_service | [run:d2cd271603] agent tool call: feature_analysis_agent -> outlier_report_iqr
+2026-03-14 05:48:34 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:34 | INFO | app.services.workflow_service | [run:d2cd271603] agent tool call: feature_analysis_agent -> aggregate_data
+2026-03-14 05:48:35 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:35 | INFO | app.services.workflow_service | [run:d2cd271603] agent tool call: feature_analysis_agent -> aggregate_data
+2026-03-14 05:48:35 | INFO | app.services.workflow_service | [run:d2cd271603] agent complete: feature_analysis_agent output_chars=52
+2026-03-14 05:48:36 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:36 | INFO | app.services.workflow_service | [run:d2cd271603] supervisor dispatch: Supervisor decision: route to insight_generation_agent
+Reason: The user requests insights that will benefit profit. The insight_generation_agent is needed to synthesize the cleaned and feature‑level analysis into actionable profit‑related findings before any recommendations can be made.
+Instruction: Using the available dataset (Sample - Superstore.csv) and the partial outputs from data_cleaning_agent and feature_analysis_agent, generate profit‑focused business insights. Identify the main drivers of profit and loss, such as high‑profit product categories, regions, customer segments, and the effect of discounts, shipping modes, and order dates on profit. Highlight any anomalies (e.g., orders with negative profit) and summarize patterns that could be leveraged to increase overall profitability.
+2026-03-14 05:48:36 | INFO | app.services.workflow_service | [run:d2cd271603] agent start: insight_generation_agent
+2026-03-14 05:48:38 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:38 | INFO | app.services.workflow_service | [run:d2cd271603] agent tool call: insight_generation_agent -> summary_statistics
+2026-03-14 05:48:39 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:39 | INFO | app.services.workflow_service | [run:d2cd271603] agent tool call: insight_generation_agent -> aggregate_data
+2026-03-14 05:48:40 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:40 | INFO | app.services.workflow_service | [run:d2cd271603] agent tool call: insight_generation_agent -> aggregate_data
+2026-03-14 05:48:41 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:41 | INFO | app.services.workflow_service | [run:d2cd271603] agent tool call: insight_generation_agent -> aggregate_data
+2026-03-14 05:48:41 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:41 | INFO | app.services.workflow_service | [run:d2cd271603] agent tool call: insight_generation_agent -> aggregate_data
+2026-03-14 05:48:42 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:42 | INFO | app.services.workflow_service | [run:d2cd271603] agent tool call: insight_generation_agent -> correlation_report
+2026-03-14 05:48:43 | INFO | app.services.workflow_service | [run:d2cd271603] agent complete: insight_generation_agent output_chars=52
+2026-03-14 05:48:45 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:45 | INFO | app.services.workflow_service | [run:d2cd271603] supervisor dispatch: Supervisor decision: route to recommendation_agent
+Reason: The user asks for profit‑focused insights. The analysis agents have supplied partial data cleaning, feature analysis, and insight generation; the remaining step is to convert those insights into concrete recommendations.
+Instruction: Based on the partial analyses already produced by data_cleaning_agent, feature_analysis_agent, and insight_generation_agent, synthesize actionable recommendations that will help increase profit. Focus on identifying high‑profit segments, products, and regions, addressing loss‑making categories, optimizing discounts, and any other profit‑centred insights. Provide concise business actions without generating visual artifacts.
+2026-03-14 05:48:45 | INFO | app.services.workflow_service | [run:d2cd271603] agent start: recommendation_agent
+2026-03-14 05:48:46 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:46 | INFO | app.services.workflow_service | [run:d2cd271603] agent tool call: recommendation_agent -> aggregate_data
+2026-03-14 05:48:47 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:47 | INFO | app.services.workflow_service | [run:d2cd271603] agent tool call: recommendation_agent -> aggregate_data
+2026-03-14 05:48:48 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:48 | INFO | app.services.workflow_service | [run:d2cd271603] agent tool call: recommendation_agent -> aggregate_data
+2026-03-14 05:48:49 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:49 | INFO | app.services.workflow_service | [run:d2cd271603] agent tool call: recommendation_agent -> aggregate_data
+2026-03-14 05:48:49 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:49 | INFO | app.services.workflow_service | [run:d2cd271603] agent tool call: recommendation_agent -> correlation_report
+2026-03-14 05:48:58 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:48:58 | INFO | app.services.workflow_service | [run:d2cd271603] agent complete: recommendation_agent output_chars=5559
+2026-03-14 05:48:58 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:49:08 | INFO | app.services.workflow_service | [run:d2cd271603] supervisor finalized report
+2026-03-14 05:49:08 | INFO | app.services.analysis_service | [run:d2cd271603] streaming analysis finished in 52524.57 ms
+2026-03-14 05:49:08 | INFO | app.api | [run:d2cd271603] stream workflow completed reply_chars=8280
+2026-03-14 05:49:09 | INFO | app.api | [request:96fc213a] started GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 05:49:09 | INFO | app.api | [request:96fc213a] completed GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e status=200 duration_ms=16.53
+2026-03-14 05:49:09 | INFO | app.api | [request:c4f244d3] started GET /api/v1/chat/sessions
+2026-03-14 05:49:09 | INFO | app.api | [request:c4f244d3] completed GET /api/v1/chat/sessions status=200 duration_ms=18.71
+2026-03-14 05:50:34 | INFO | app.api | [request:59876039] started GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e
+2026-03-14 05:50:34 | INFO | app.api | [request:59876039] completed GET /api/v1/chat/session/e6b607c6-903f-4202-a198-5868dabfb05e status=200 duration_ms=18.35
+2026-03-14 05:50:51 | INFO | app.api | [request:e752b0da] started POST /api/v1/chat/session
+2026-03-14 05:50:51 | INFO | app.api | [request:e752b0da] completed POST /api/v1/chat/session status=200 duration_ms=35.97
+2026-03-14 05:50:51 | INFO | app.api | [request:d3e89173] started GET /api/v1/chat/sessions
+2026-03-14 05:50:51 | INFO | app.api | [request:d3e89173] completed GET /api/v1/chat/sessions status=200 duration_ms=42.58
+2026-03-14 05:53:00 | INFO | app.api | [request:7cb0b7fe] started POST /api/v1/chat/upload
+2026-03-14 05:53:00 | INFO | app.api | upload received: filename=sample_sub.csv session_id=0b878c60-aad9-4f6a-a9ac-e6e8b987edf1
+2026-03-14 05:53:00 | INFO | app.api | upload processed: session_id=0b878c60-aad9-4f6a-a9ac-e6e8b987edf1 dataset_path=data\uploads\0b878c60-aad9-4f6a-a9ac-e6e8b987edf1\sample_sub.csv summary=Uploaded sample_sub.csv with 137057 rows and 2 columns. Columns: case_id, Stay.
+2026-03-14 05:53:00 | INFO | app.api | [request:7cb0b7fe] completed POST /api/v1/chat/upload status=200 duration_ms=126.58
+2026-03-14 05:53:01 | INFO | app.api | [request:e4814209] started GET /api/v1/chat/sessions
+2026-03-14 05:53:01 | INFO | app.api | [request:e4814209] completed GET /api/v1/chat/sessions status=200 duration_ms=23.22
+2026-03-14 05:53:20 | INFO | app.api | [request:2fe2c01d] started POST /api/v1/chat/message/stream
+2026-03-14 05:53:20 | INFO | app.api | [run:799e385a3e] stream request received session_id=0b878c60-aad9-4f6a-a9ac-e6e8b987edf1
+2026-03-14 05:53:21 | INFO | app.services.analysis_service | [run:799e385a3e] streaming analysis started
+2026-03-14 05:53:21 | INFO | app.api | [request:2fe2c01d] completed POST /api/v1/chat/message/stream status=200 duration_ms=34.67
+2026-03-14 05:53:21 | INFO | app.services.analysis_service | [run:799e385a3e] building LLM client provider=gradient model=openai-gpt-oss-120b
+2026-03-14 05:53:21 | INFO | app.services.llm_service | LLMService using DigitalOcean Gradient base=https://inference.do-ai.run/v1/ model=openai-gpt-oss-120b
+2026-03-14 05:53:21 | INFO | app.services.analysis_service | [run:799e385a3e] dataset tools initialized count=11
+2026-03-14 05:53:21 | INFO | app.services.workflow_service | workflow mode=supervisor workers=['casual_convo_agent', 'data_cleaning_agent', 'feature_analysis_agent', 'insight_generation_agent', 'recommendation_agent', 'visualization_agent']
+2026-03-14 05:53:22 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:53:22 | INFO | app.services.workflow_service | [run:799e385a3e] supervisor dispatch: Supervisor decision: route to data_cleaning_agent
+Reason: The user asks specifically about missing values in the dataset, which is a data quality issue best handled by the Data Cleaning Agent.
+Instruction: Examine the dataset sample_sub.csv and determine if there are any missing values in any column. Provide a summary indicating which columns, if any, contain missing values and the count of missing entries per column.
+2026-03-14 05:53:22 | INFO | app.services.workflow_service | [run:799e385a3e] agent start: data_cleaning_agent
+2026-03-14 05:53:23 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:53:23 | INFO | app.services.workflow_service | [run:799e385a3e] agent tool call: data_cleaning_agent -> missing_values_report
+2026-03-14 05:53:24 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:53:24 | INFO | app.services.workflow_service | [run:799e385a3e] agent complete: data_cleaning_agent output_chars=397
+2026-03-14 05:53:24 | INFO | httpx | HTTP Request: POST https://inference.do-ai.run/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-14 05:53:27 | INFO | app.services.workflow_service | [run:799e385a3e] supervisor finalized report
+2026-03-14 05:53:27 | INFO | app.services.analysis_service | [run:799e385a3e] streaming analysis finished in 6790.82 ms
+2026-03-14 05:53:27 | INFO | app.api | [run:799e385a3e] stream workflow completed reply_chars=2470
+2026-03-14 05:53:27 | INFO | app.api | [request:081a352e] started GET /api/v1/chat/session/0b878c60-aad9-4f6a-a9ac-e6e8b987edf1
+2026-03-14 05:53:27 | INFO | app.api | [request:081a352e] completed GET /api/v1/chat/session/0b878c60-aad9-4f6a-a9ac-e6e8b987edf1 status=200 duration_ms=10.91
+2026-03-14 05:53:27 | INFO | app.api | [request:41b21515] started GET /api/v1/chat/sessions
+2026-03-14 05:53:28 | INFO | app.api | [request:41b21515] completed GET /api/v1/chat/sessions status=200 duration_ms=22.34

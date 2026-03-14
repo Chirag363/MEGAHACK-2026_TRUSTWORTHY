@@ -1,7 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { BookmarkCheckIcon, DatabaseIcon, FileTextIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { SAVED_REPORTS_KEY, type SavedReport } from "@/lib/report-pdf";
+import { cn } from "@/lib/utils";
+import { useTheme } from "@/components/theme-provider";
 
 type ChatSessionListItem = {
   session_id: string;
@@ -48,6 +52,18 @@ export default function DashboardOverview() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingSession, setIsLoadingSession] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [savedReports, setSavedReports] = useState<SavedReport[]>([]);
+  const { theme } = useTheme();
+  const d = theme !== "light";
+
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem(SAVED_REPORTS_KEY) ?? "[]") as SavedReport[];
+      setSavedReports(stored.slice(0, 3));
+    } catch {
+      setSavedReports([]);
+    }
+  }, []);
 
   const fetchSessions = useCallback(async () => {
     const response = await fetch("/api/chat/sessions", { method: "GET", cache: "no-store" });
@@ -126,10 +142,6 @@ export default function DashboardOverview() {
     };
   }, [fetchSessionById, fetchSessions]);
 
-  const assistantMessages = useMemo(
-    () => activeSession?.messages.filter((msg) => msg.role === "assistant") ?? [],
-    [activeSession]
-  );
   const userMessages = useMemo(
     () => activeSession?.messages.filter((msg) => msg.role === "user") ?? [],
     [activeSession]
@@ -148,17 +160,17 @@ export default function DashboardOverview() {
   return (
     <div className="space-y-6 px-4 pb-6 lg:px-6">
       <div className="grid gap-3 sm:grid-cols-3">
-        <div className="rounded-xl border border-white/10 bg-black/20 p-4">
-          <p className="text-xs text-white/50">Total Sessions</p>
-          <p className="mt-1 text-2xl font-semibold text-white">{totals.sessions}</p>
+        <div className={cn("rounded-xl border p-4", d ? "border-white/10 bg-black/20" : "border-slate-200 bg-slate-50")}>
+          <p className={cn("text-xs", d ? "text-white/50" : "text-slate-500")}>Total Sessions</p>
+          <p className={cn("mt-1 text-2xl font-semibold", d ? "text-white" : "text-slate-900")}>{totals.sessions}</p>
         </div>
-        <div className="rounded-xl border border-white/10 bg-black/20 p-4">
-          <p className="text-xs text-white/50">Datasets Uploaded</p>
-          <p className="mt-1 text-2xl font-semibold text-white">{totals.uploads}</p>
+        <div className={cn("rounded-xl border p-4", d ? "border-white/10 bg-black/20" : "border-slate-200 bg-slate-50")}>
+          <p className={cn("text-xs", d ? "text-white/50" : "text-slate-500")}>Datasets Uploaded</p>
+          <p className={cn("mt-1 text-2xl font-semibold", d ? "text-white" : "text-slate-900")}>{totals.uploads}</p>
         </div>
-        <div className="rounded-xl border border-white/10 bg-black/20 p-4">
-          <p className="text-xs text-white/50">Total Messages</p>
-          <p className="mt-1 text-2xl font-semibold text-white">{totals.messages}</p>
+        <div className={cn("rounded-xl border p-4", d ? "border-white/10 bg-black/20" : "border-slate-200 bg-slate-50")}>
+          <p className={cn("text-xs", d ? "text-white/50" : "text-slate-500")}>Total Messages</p>
+          <p className={cn("mt-1 text-2xl font-semibold", d ? "text-white" : "text-slate-900")}>{totals.messages}</p>
         </div>
       </div>
 
@@ -169,101 +181,129 @@ export default function DashboardOverview() {
       )}
 
       {isLoading ? (
-        <div className="rounded-xl border border-white/10 bg-black/20 p-6 text-sm text-white/70">
+        <div className={cn("rounded-xl border p-6 text-sm", d ? "border-white/10 bg-black/20 text-white/70" : "border-slate-200 bg-slate-50 text-slate-500")}>
           Loading your dashboard data...
         </div>
       ) : sessions.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-white/20 bg-black/20 p-6 text-sm text-white/70">
+        <div className={cn("rounded-xl border border-dashed p-6 text-sm", d ? "border-white/20 bg-black/20 text-white/70" : "border-slate-300 bg-slate-50 text-slate-500")}>
           No uploaded data yet. Go to{" "}
-          <Link href="/dashboard/chat" className="text-white underline underline-offset-4">
+          <Link href="/dashboard/chat" className={cn("underline underline-offset-4", d ? "text-white" : "text-slate-900")}>
             chat
           </Link>{" "}
           to upload a dataset and start analysis.
         </div>
       ) : (
         <div className="grid gap-4 lg:grid-cols-[320px_minmax(0,1fr)]">
-          <aside className="rounded-xl border border-white/10 bg-black/20 p-3">
-            <h2 className="mb-3 text-sm font-semibold text-white/90">Uploaded Data Sessions</h2>
+          <aside className={cn("rounded-xl border p-3", d ? "border-white/10 bg-black/20" : "border-slate-200 bg-white")}>
+            <h2 className={cn("mb-3 text-sm font-semibold", d ? "text-white/90" : "text-slate-800")}>Uploaded Data Sessions</h2>
             <div className="space-y-2">
               {sessions.map((session) => (
                 <button
                   key={session.session_id}
                   type="button"
                   onClick={() => void loadSessionDetails(session.session_id)}
-                  className={`w-full rounded-lg border px-3 py-2 text-left transition ${
+                  className={cn(
+                    "w-full rounded-lg border px-3 py-2 text-left transition",
                     activeSessionId === session.session_id
-                      ? "border-white/30 bg-white/10"
-                      : "border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.06]"
-                  }`}
+                      ? d ? "border-white/30 bg-white/10" : "border-slate-400 bg-slate-100"
+                      : d ? "border-white/10 bg-white/3 hover:border-white/20 hover:bg-white/6" : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50"
+                  )}
                 >
-                  <p className="truncate text-sm font-medium text-white/90">
+                  <p className={cn("truncate text-sm font-medium", d ? "text-white/90" : "text-slate-800")}>
                     {session.title || "New chat"}
                   </p>
-                  <p className="truncate text-xs text-white/55">
+                  <p className={cn("truncate text-xs", d ? "text-white/55" : "text-slate-500")}>
                     {session.dataset_name || "No dataset uploaded"}
                   </p>
-                  <p className="mt-1 text-[11px] text-white/40">{formatDate(session.updated_at)}</p>
+                  <p className={cn("mt-1 text-[11px]", d ? "text-white/40" : "text-slate-400")}>{formatDate(session.updated_at)}</p>
                 </button>
               ))}
             </div>
           </aside>
 
           <section className="space-y-4">
-            <div className="rounded-xl border border-white/10 bg-black/20 p-4">
+            <div className={cn("rounded-xl border p-4", d ? "border-white/10 bg-black/20" : "border-slate-200 bg-white")}>
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h3 className="text-lg font-semibold text-white">
+                  <h3 className={cn("text-lg font-semibold", d ? "text-white" : "text-slate-900")}>
                     {activeSession?.title || "Session"}
                   </h3>
-                  <p className="text-sm text-white/65">
+                  <p className={cn("text-sm", d ? "text-white/65" : "text-slate-500")}>
                     Dataset: {activeSession?.dataset_name || "No dataset uploaded"}
                   </p>
                 </div>
                 <Link
                   href="/dashboard/chat"
-                  className="rounded-md border border-white/20 px-3 py-1.5 text-xs text-white/80 hover:bg-white/10"
+                  className={cn("rounded-md border px-3 py-1.5 text-xs transition", d ? "border-white/20 text-white/80 hover:bg-white/10" : "border-slate-300 text-slate-600 hover:bg-slate-100")}
                 >
                   Manage in Chat
                 </Link>
               </div>
 
-              <div className="mt-3 rounded-lg border border-white/10 bg-white/[0.03] p-3 text-sm text-white/75">
-                <p className="text-xs uppercase tracking-wide text-white/50">Dataset Summary</p>
+              <div className={cn("mt-3 rounded-lg border p-3 text-sm", d ? "border-white/10 bg-white/3 text-white/75" : "border-slate-200 bg-slate-50 text-slate-600")}>
+                <p className={cn("text-xs uppercase tracking-wide", d ? "text-white/50" : "text-slate-400")}>Dataset Summary</p>
                 <p className="mt-1">{activeSession?.dataset_summary || "No summary available."}</p>
               </div>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
-              <div className="rounded-xl border border-white/10 bg-black/20 p-4">
-                <h4 className="text-sm font-semibold text-white/90">Recent Analysis Outputs</h4>
-                {isLoadingSession ? (
-                  <p className="mt-3 text-sm text-white/60">Loading analysis messages...</p>
-                ) : assistantMessages.length === 0 ? (
-                  <p className="mt-3 text-sm text-white/60">No analysis output yet.</p>
+              <div className={cn("rounded-xl border p-4", d ? "border-white/10 bg-black/20" : "border-slate-200 bg-white")}>
+                <div className="flex items-center justify-between">
+                  <h4 className={cn("text-sm font-semibold", d ? "text-white/90" : "text-slate-800")}>Saved Reports</h4>
+                  <Link
+                    href="/dashboard/report"
+                    className="text-[11px] text-cyan-400/70 hover:text-cyan-300 transition-colors"
+                  >
+                    View all →
+                  </Link>
+                </div>
+                {savedReports.length === 0 ? (
+                  <div className="mt-3 flex flex-col items-center gap-2 py-4 text-center">
+                    <BookmarkCheckIcon className={cn("size-5", d ? "text-white/20" : "text-slate-300")} />
+                    <p className={cn("text-xs", d ? "text-white/40" : "text-slate-400")}>No saved reports yet.</p>
+                    <p className={cn("text-[11px]", d ? "text-white/30" : "text-slate-400")}>
+                      Use &ldquo;Save to Library&rdquo; in Chat to save reports here.
+                    </p>
+                  </div>
                 ) : (
                   <div className="mt-3 space-y-2">
-                    {assistantMessages.slice(-3).reverse().map((msg, idx) => (
-                      <div key={`${msg.created_at}-${idx}`} className="rounded-md border border-white/10 p-2">
-                        <p className="line-clamp-4 text-xs text-white/80">{msg.content}</p>
-                        <p className="mt-1 text-[11px] text-white/45">{formatDate(msg.created_at)}</p>
-                      </div>
+                    {savedReports.map((report) => (
+                      <Link
+                        key={report.id}
+                        href="/dashboard/report"
+                        className={cn("flex items-start gap-2.5 rounded-lg border p-2.5 transition-all", d ? "border-white/10 bg-white/3 hover:border-white/20 hover:bg-white/6" : "border-slate-200 bg-slate-50 hover:border-slate-300 hover:bg-slate-100")}
+                      >
+                        <div className={cn("flex h-7 w-7 shrink-0 items-center justify-center rounded-md border", d ? "border-white/10 bg-white/5" : "border-slate-200 bg-slate-100")}>
+                          <FileTextIcon className="size-3.5 text-cyan-400/70" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className={cn("truncate text-xs font-medium", d ? "text-white/80" : "text-slate-700")}>{report.title}</p>
+                          {report.datasetName && (
+                            <p className="mt-0.5 flex items-center gap-1 truncate text-[11px] text-emerald-300/60">
+                              <DatabaseIcon className="size-2.5 shrink-0" />
+                              {report.datasetName}
+                            </p>
+                          )}
+                          <p className={cn("mt-0.5 text-[11px]", d ? "text-white/35" : "text-slate-400")}>{formatDate(report.savedAt)}</p>
+                        </div>
+                      </Link>
                     ))}
                   </div>
                 )}
               </div>
 
-              <div className="rounded-xl border border-white/10 bg-black/20 p-4">
-                <h4 className="text-sm font-semibold text-white/90">Recent User Requests</h4>
+              <div className={cn("rounded-xl border p-4", d ? "border-white/10 bg-black/20" : "border-slate-200 bg-white")}>
+                <h4 className={cn("text-sm font-semibold", d ? "text-white/90" : "text-slate-800")}>Recent User Requests</h4>
                 {isLoadingSession ? (
-                  <p className="mt-3 text-sm text-white/60">Loading user requests...</p>
+                  <p className={cn("mt-3 text-sm", d ? "text-white/60" : "text-slate-500")}>Loading user requests...</p>
                 ) : userMessages.length === 0 ? (
-                  <p className="mt-3 text-sm text-white/60">No user analysis requests yet.</p>
+                  <p className={cn("mt-3 text-sm", d ? "text-white/60" : "text-slate-500")}>No user analysis requests yet.</p>
                 ) : (
                   <div className="mt-3 space-y-2">
                     {userMessages.slice(-5).reverse().map((msg, idx) => (
-                      <div key={`${msg.created_at}-${idx}`} className="rounded-md border border-white/10 p-2">
-                        <p className="line-clamp-3 text-xs text-white/80">{msg.content}</p>
-                        <p className="mt-1 text-[11px] text-white/45">{formatDate(msg.created_at)}</p>
+                      <div key={`${msg.created_at}-${idx}`} className={cn("rounded-md border p-2", d ? "border-white/10" : "border-slate-200")}>
+                        <p className={cn("line-clamp-3 text-xs", d ? "text-white/80" : "text-slate-700")}>{msg.content}</p>
+                        <p className={cn("mt-1 text-[11px]", d ? "text-white/45" : "text-slate-400")}>{formatDate(msg.created_at)}</p>
                       </div>
                     ))}
                   </div>

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { BookmarkCheckIcon, DatabaseIcon, DownloadIcon, FileTextIcon, SearchIcon, TrashIcon } from "lucide-react";
 import { jsPDF } from "jspdf";
-import { MessageResponse } from "@/components/ai-elements/message";
+import { RichMessageResponse } from "@/components/ai-elements/rich-message-response";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 
@@ -435,8 +435,8 @@ export default function DashboardReportPage() {
                   </DialogHeader>
 
                   <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
-                    <div className="prose prose-sm prose-invert max-w-none rounded-xl border border-white/8 bg-black/20 p-4 text-xs leading-relaxed text-white/70">
-                      <MessageResponse isAnimating={false}>{selectedReport.content}</MessageResponse>
+                    <div className="rounded-xl border border-white/8 bg-black/20 p-4 text-xs leading-relaxed text-white/70">
+                      <RichMessageResponse isAnimating={false}>{selectedReport.content}</RichMessageResponse>
                     </div>
                   </div>
 
